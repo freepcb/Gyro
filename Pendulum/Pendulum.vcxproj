@@ -1,0 +1,352 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{29d8b87d-7f08-4913-af77-eea6cf71bdec}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>Pendulum</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Gyro</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\Simbody-build\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">DzhanibekovEffect.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">DzhanibekovEffect</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\Simbody-build\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">DzhanibekovEffect.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">DzhanibekovEffect</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\Simbody-build\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">DzhanibekovEffect.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">DzhanibekovEffect</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Simbody-source\Platform\Windows\include;D:\Simbody-source\SimTKcommon\.\include;D:\Simbody-source\SimTKcommon\Scalar\include;D:\Simbody-source\SimTKcommon\SmallMatrix\include;D:\Simbody-source\SimTKcommon\Mechanics\include;D:\Simbody-source\SimTKcommon\BigMatrix\include;D:\Simbody-source\SimTKcommon\Geometry\include;D:\Simbody-source\SimTKcommon\Simulation\include;D:\Simbody-source\SimTKcommon\Random\include;D:\Simbody-source\SimTKcommon\Polynomial\include;D:\Simbody-source\SimTKmath\.\include;D:\Simbody-source\SimTKmath\LinearAlgebra\include;D:\Simbody-source\SimTKmath\Integrators\include;D:\Simbody-source\SimTKmath\Optimizers\include;D:\Simbody-source\SimTKmath\Geometry\include;D:\Simbody-source\Simbody\.\include;D:\Simbody-source\Simbody\Visualizer\include;D:\Simbody-source\examples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_DEBUG;SIMBODY_EXAMPLE_NAME=DzhanibekovEffect;SimTK_SIMBODY_COPYRIGHT_YEARS="2005-18";SimTK_SIMBODY_AUTHORS="Michael.Sherman_Peter.Eastman";SIMBODY_EXAMPLES_INSTALL_SRC="C:/Program Files (x86)/Simbody/examples/src/";CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;SIMBODY_EXAMPLE_NAME=DzhanibekovEffect;SimTK_SIMBODY_COPYRIGHT_YEARS=\"2005-18\";SimTK_SIMBODY_AUTHORS=\"Michael.Sherman_Peter.Eastman\";SIMBODY_EXAMPLES_INSTALL_SRC=\"C:/Program Files (x86)/Simbody/examples/src/\";CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Simbody-source\Platform\Windows\include;D:\Simbody-source\SimTKcommon\.\include;D:\Simbody-source\SimTKcommon\Scalar\include;D:\Simbody-source\SimTKcommon\SmallMatrix\include;D:\Simbody-source\SimTKcommon\Mechanics\include;D:\Simbody-source\SimTKcommon\BigMatrix\include;D:\Simbody-source\SimTKcommon\Geometry\include;D:\Simbody-source\SimTKcommon\Simulation\include;D:\Simbody-source\SimTKcommon\Random\include;D:\Simbody-source\SimTKcommon\Polynomial\include;D:\Simbody-source\SimTKmath\.\include;D:\Simbody-source\SimTKmath\LinearAlgebra\include;D:\Simbody-source\SimTKmath\Integrators\include;D:\Simbody-source\SimTKmath\Optimizers\include;D:\Simbody-source\SimTKmath\Geometry\include;D:\Simbody-source\Simbody\.\include;D:\Simbody-source\Simbody\Visualizer\include;D:\Simbody-source\examples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Simbody-source\Platform\Windows\include;D:\Simbody-source\SimTKcommon\.\include;D:\Simbody-source\SimTKcommon\Scalar\include;D:\Simbody-source\SimTKcommon\SmallMatrix\include;D:\Simbody-source\SimTKcommon\Mechanics\include;D:\Simbody-source\SimTKcommon\BigMatrix\include;D:\Simbody-source\SimTKcommon\Geometry\include;D:\Simbody-source\SimTKcommon\Simulation\include;D:\Simbody-source\SimTKcommon\Random\include;D:\Simbody-source\SimTKcommon\Polynomial\include;D:\Simbody-source\SimTKmath\.\include;D:\Simbody-source\SimTKmath\LinearAlgebra\include;D:\Simbody-source\SimTKmath\Integrators\include;D:\Simbody-source\SimTKmath\Optimizers\include;D:\Simbody-source\SimTKmath\Geometry\include;D:\Simbody-source\Simbody\.\include;D:\Simbody-source\Simbody\Visualizer\include;D:\Simbody-source\examples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>..\Debug\SimTKsimbody_d.lib;..\Debug\SimTKmath_d.lib;..\Debug\SimTKcommon_d.lib;D:\Simbody-source\Platform\Windows\lib_x86\liblapack.lib;D:\Simbody-source\Platform\Windows\lib_x86\libblas.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/Simbody-build/Debug/DzhanibekovEffect.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/Simbody-build/Debug/DzhanibekovEffect.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Simbody-source\Platform\Windows\include;D:\Simbody-source\SimTKcommon\.\include;D:\Simbody-source\SimTKcommon\Scalar\include;D:\Simbody-source\SimTKcommon\SmallMatrix\include;D:\Simbody-source\SimTKcommon\Mechanics\include;D:\Simbody-source\SimTKcommon\BigMatrix\include;D:\Simbody-source\SimTKcommon\Geometry\include;D:\Simbody-source\SimTKcommon\Simulation\include;D:\Simbody-source\SimTKcommon\Random\include;D:\Simbody-source\SimTKcommon\Polynomial\include;D:\Simbody-source\SimTKmath\.\include;D:\Simbody-source\SimTKmath\LinearAlgebra\include;D:\Simbody-source\SimTKmath\Integrators\include;D:\Simbody-source\SimTKmath\Optimizers\include;D:\Simbody-source\SimTKmath\Geometry\include;D:\Simbody-source\Simbody\.\include;D:\Simbody-source\Simbody\Visualizer\include;D:\Simbody-source\examples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;SIMBODY_EXAMPLE_NAME=DzhanibekovEffect;SimTK_SIMBODY_COPYRIGHT_YEARS="2005-18";SimTK_SIMBODY_AUTHORS="Michael.Sherman_Peter.Eastman";SIMBODY_EXAMPLES_INSTALL_SRC="C:/Program Files (x86)/Simbody/examples/src/";CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;SIMBODY_EXAMPLE_NAME=DzhanibekovEffect;SimTK_SIMBODY_COPYRIGHT_YEARS=\"2005-18\";SimTK_SIMBODY_AUTHORS=\"Michael.Sherman_Peter.Eastman\";SIMBODY_EXAMPLES_INSTALL_SRC=\"C:/Program Files (x86)/Simbody/examples/src/\";CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Simbody-source\Platform\Windows\include;D:\Simbody-source\SimTKcommon\.\include;D:\Simbody-source\SimTKcommon\Scalar\include;D:\Simbody-source\SimTKcommon\SmallMatrix\include;D:\Simbody-source\SimTKcommon\Mechanics\include;D:\Simbody-source\SimTKcommon\BigMatrix\include;D:\Simbody-source\SimTKcommon\Geometry\include;D:\Simbody-source\SimTKcommon\Simulation\include;D:\Simbody-source\SimTKcommon\Random\include;D:\Simbody-source\SimTKcommon\Polynomial\include;D:\Simbody-source\SimTKmath\.\include;D:\Simbody-source\SimTKmath\LinearAlgebra\include;D:\Simbody-source\SimTKmath\Integrators\include;D:\Simbody-source\SimTKmath\Optimizers\include;D:\Simbody-source\SimTKmath\Geometry\include;D:\Simbody-source\Simbody\.\include;D:\Simbody-source\Simbody\Visualizer\include;D:\Simbody-source\examples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Simbody-source\Platform\Windows\include;D:\Simbody-source\SimTKcommon\.\include;D:\Simbody-source\SimTKcommon\Scalar\include;D:\Simbody-source\SimTKcommon\SmallMatrix\include;D:\Simbody-source\SimTKcommon\Mechanics\include;D:\Simbody-source\SimTKcommon\BigMatrix\include;D:\Simbody-source\SimTKcommon\Geometry\include;D:\Simbody-source\SimTKcommon\Simulation\include;D:\Simbody-source\SimTKcommon\Random\include;D:\Simbody-source\SimTKcommon\Polynomial\include;D:\Simbody-source\SimTKmath\.\include;D:\Simbody-source\SimTKmath\LinearAlgebra\include;D:\Simbody-source\SimTKmath\Integrators\include;D:\Simbody-source\SimTKmath\Optimizers\include;D:\Simbody-source\SimTKmath\Geometry\include;D:\Simbody-source\Simbody\.\include;D:\Simbody-source\Simbody\Visualizer\include;D:\Simbody-source\examples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>..\Release\SimTKsimbody.lib;..\Release\SimTKmath.lib;..\Release\SimTKcommon.lib;D:\Simbody-source\Platform\Windows\lib_x86\liblapack.lib;D:\Simbody-source\Platform\Windows\lib_x86\libblas.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/Simbody-build/Release/DzhanibekovEffect.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/Simbody-build/Release/DzhanibekovEffect.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Simbody-source\Platform\Windows\include;D:\Simbody-source\SimTKcommon\.\include;D:\Simbody-source\SimTKcommon\Scalar\include;D:\Simbody-source\SimTKcommon\SmallMatrix\include;D:\Simbody-source\SimTKcommon\Mechanics\include;D:\Simbody-source\SimTKcommon\BigMatrix\include;D:\Simbody-source\SimTKcommon\Geometry\include;D:\Simbody-source\SimTKcommon\Simulation\include;D:\Simbody-source\SimTKcommon\Random\include;D:\Simbody-source\SimTKcommon\Polynomial\include;D:\Simbody-source\SimTKmath\.\include;D:\Simbody-source\SimTKmath\LinearAlgebra\include;D:\Simbody-source\SimTKmath\Integrators\include;D:\Simbody-source\SimTKmath\Optimizers\include;D:\Simbody-source\SimTKmath\Geometry\include;D:\Simbody-source\Simbody\.\include;D:\Simbody-source\Simbody\Visualizer\include;D:\Simbody-source\examples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;SIMBODY_EXAMPLE_NAME=DzhanibekovEffect;SimTK_SIMBODY_COPYRIGHT_YEARS="2005-18";SimTK_SIMBODY_AUTHORS="Michael.Sherman_Peter.Eastman";SIMBODY_EXAMPLES_INSTALL_SRC="C:/Program Files (x86)/Simbody/examples/src/";CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;SIMBODY_EXAMPLE_NAME=DzhanibekovEffect;SimTK_SIMBODY_COPYRIGHT_YEARS=\"2005-18\";SimTK_SIMBODY_AUTHORS=\"Michael.Sherman_Peter.Eastman\";SIMBODY_EXAMPLES_INSTALL_SRC=\"C:/Program Files (x86)/Simbody/examples/src/\";CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Simbody-source\Platform\Windows\include;D:\Simbody-source\SimTKcommon\.\include;D:\Simbody-source\SimTKcommon\Scalar\include;D:\Simbody-source\SimTKcommon\SmallMatrix\include;D:\Simbody-source\SimTKcommon\Mechanics\include;D:\Simbody-source\SimTKcommon\BigMatrix\include;D:\Simbody-source\SimTKcommon\Geometry\include;D:\Simbody-source\SimTKcommon\Simulation\include;D:\Simbody-source\SimTKcommon\Random\include;D:\Simbody-source\SimTKcommon\Polynomial\include;D:\Simbody-source\SimTKmath\.\include;D:\Simbody-source\SimTKmath\LinearAlgebra\include;D:\Simbody-source\SimTKmath\Integrators\include;D:\Simbody-source\SimTKmath\Optimizers\include;D:\Simbody-source\SimTKmath\Geometry\include;D:\Simbody-source\Simbody\.\include;D:\Simbody-source\Simbody\Visualizer\include;D:\Simbody-source\examples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Simbody-source\Platform\Windows\include;D:\Simbody-source\SimTKcommon\.\include;D:\Simbody-source\SimTKcommon\Scalar\include;D:\Simbody-source\SimTKcommon\SmallMatrix\include;D:\Simbody-source\SimTKcommon\Mechanics\include;D:\Simbody-source\SimTKcommon\BigMatrix\include;D:\Simbody-source\SimTKcommon\Geometry\include;D:\Simbody-source\SimTKcommon\Simulation\include;D:\Simbody-source\SimTKcommon\Random\include;D:\Simbody-source\SimTKcommon\Polynomial\include;D:\Simbody-source\SimTKmath\.\include;D:\Simbody-source\SimTKmath\LinearAlgebra\include;D:\Simbody-source\SimTKmath\Integrators\include;D:\Simbody-source\SimTKmath\Optimizers\include;D:\Simbody-source\SimTKmath\Geometry\include;D:\Simbody-source\Simbody\.\include;D:\Simbody-source\Simbody\Visualizer\include;D:\Simbody-source\examples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>..\MinSizeRel\SimTKsimbody.lib;..\MinSizeRel\SimTKmath.lib;..\MinSizeRel\SimTKcommon.lib;D:\Simbody-source\Platform\Windows\lib_x86\liblapack.lib;D:\Simbody-source\Platform\Windows\lib_x86\libblas.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/Simbody-build/MinSizeRel/DzhanibekovEffect.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/Simbody-build/MinSizeRel/DzhanibekovEffect.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Simbody-source\Platform\Windows\include;D:\Simbody-source\SimTKcommon\.\include;D:\Simbody-source\SimTKcommon\Scalar\include;D:\Simbody-source\SimTKcommon\SmallMatrix\include;D:\Simbody-source\SimTKcommon\Mechanics\include;D:\Simbody-source\SimTKcommon\BigMatrix\include;D:\Simbody-source\SimTKcommon\Geometry\include;D:\Simbody-source\SimTKcommon\Simulation\include;D:\Simbody-source\SimTKcommon\Random\include;D:\Simbody-source\SimTKcommon\Polynomial\include;D:\Simbody-source\SimTKmath\.\include;D:\Simbody-source\SimTKmath\LinearAlgebra\include;D:\Simbody-source\SimTKmath\Integrators\include;D:\Simbody-source\SimTKmath\Optimizers\include;D:\Simbody-source\SimTKmath\Geometry\include;D:\Simbody-source\Simbody\.\include;D:\Simbody-source\Simbody\Visualizer\include;D:\Simbody-source\examples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;SIMBODY_EXAMPLE_NAME=DzhanibekovEffect;SimTK_SIMBODY_COPYRIGHT_YEARS="2005-18";SimTK_SIMBODY_AUTHORS="Michael.Sherman_Peter.Eastman";SIMBODY_EXAMPLES_INSTALL_SRC="C:/Program Files (x86)/Simbody/examples/src/";CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;SIMBODY_EXAMPLE_NAME=DzhanibekovEffect;SimTK_SIMBODY_COPYRIGHT_YEARS=\"2005-18\";SimTK_SIMBODY_AUTHORS=\"Michael.Sherman_Peter.Eastman\";SIMBODY_EXAMPLES_INSTALL_SRC=\"C:/Program Files (x86)/Simbody/examples/src/\";CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Simbody-source\Platform\Windows\include;D:\Simbody-source\SimTKcommon\.\include;D:\Simbody-source\SimTKcommon\Scalar\include;D:\Simbody-source\SimTKcommon\SmallMatrix\include;D:\Simbody-source\SimTKcommon\Mechanics\include;D:\Simbody-source\SimTKcommon\BigMatrix\include;D:\Simbody-source\SimTKcommon\Geometry\include;D:\Simbody-source\SimTKcommon\Simulation\include;D:\Simbody-source\SimTKcommon\Random\include;D:\Simbody-source\SimTKcommon\Polynomial\include;D:\Simbody-source\SimTKmath\.\include;D:\Simbody-source\SimTKmath\LinearAlgebra\include;D:\Simbody-source\SimTKmath\Integrators\include;D:\Simbody-source\SimTKmath\Optimizers\include;D:\Simbody-source\SimTKmath\Geometry\include;D:\Simbody-source\Simbody\.\include;D:\Simbody-source\Simbody\Visualizer\include;D:\Simbody-source\examples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Simbody-source\Platform\Windows\include;D:\Simbody-source\SimTKcommon\.\include;D:\Simbody-source\SimTKcommon\Scalar\include;D:\Simbody-source\SimTKcommon\SmallMatrix\include;D:\Simbody-source\SimTKcommon\Mechanics\include;D:\Simbody-source\SimTKcommon\BigMatrix\include;D:\Simbody-source\SimTKcommon\Geometry\include;D:\Simbody-source\SimTKcommon\Simulation\include;D:\Simbody-source\SimTKcommon\Random\include;D:\Simbody-source\SimTKcommon\Polynomial\include;D:\Simbody-source\SimTKmath\.\include;D:\Simbody-source\SimTKmath\LinearAlgebra\include;D:\Simbody-source\SimTKmath\Integrators\include;D:\Simbody-source\SimTKmath\Optimizers\include;D:\Simbody-source\SimTKmath\Geometry\include;D:\Simbody-source\Simbody\.\include;D:\Simbody-source\Simbody\Visualizer\include;D:\Simbody-source\examples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>..\RelWithDebInfo\SimTKsimbody.lib;..\RelWithDebInfo\SimTKmath.lib;..\RelWithDebInfo\SimTKcommon.lib;D:\Simbody-source\Platform\Windows\lib_x86\liblapack.lib;D:\Simbody-source\Platform\Windows\lib_x86\libblas.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/Simbody-build/RelWithDebInfo/DzhanibekovEffect.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/Simbody-build/RelWithDebInfo/DzhanibekovEffect.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Simbody-source\examples\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/Simbody-source/examples/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/Simbody-source -BD:/Simbody-build --check-stamp-file D:/Simbody-build/examples/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\Simbody-source\examples\shared\DRC_OSRF_TaskSpaceReport.pdf;D:\Simbody-source\examples\shared\README.txt;D:\Simbody-source\examples\shared\SimbodyExampleHelper.h;D:\Simbody-source\examples\shared\TaskSpace.cpp;D:\Simbody-source\examples\shared\TaskSpace.h;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\Simbody-build\examples\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/Simbody-source/examples/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/Simbody-source -BD:/Simbody-build --check-stamp-file D:/Simbody-build/examples/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\Simbody-source\examples\shared\DRC_OSRF_TaskSpaceReport.pdf;D:\Simbody-source\examples\shared\README.txt;D:\Simbody-source\examples\shared\SimbodyExampleHelper.h;D:\Simbody-source\examples\shared\TaskSpace.cpp;D:\Simbody-source\examples\shared\TaskSpace.h;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\Simbody-build\examples\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule D:/Simbody-source/examples/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/Simbody-source -BD:/Simbody-build --check-stamp-file D:/Simbody-build/examples/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\Simbody-source\examples\shared\DRC_OSRF_TaskSpaceReport.pdf;D:\Simbody-source\examples\shared\README.txt;D:\Simbody-source\examples\shared\SimbodyExampleHelper.h;D:\Simbody-source\examples\shared\TaskSpace.cpp;D:\Simbody-source\examples\shared\TaskSpace.h;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\Simbody-build\examples\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule D:/Simbody-source/examples/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/Simbody-source -BD:/Simbody-build --check-stamp-file D:/Simbody-build/examples/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\Simbody-source\examples\shared\DRC_OSRF_TaskSpaceReport.pdf;D:\Simbody-source\examples\shared\README.txt;D:\Simbody-source\examples\shared\SimbodyExampleHelper.h;D:\Simbody-source\examples\shared\TaskSpace.cpp;D:\Simbody-source\examples\shared\TaskSpace.h;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\Simbody-build\examples\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:\Simbody-build\ZERO_CHECK.vcxproj">
+      <Project>{4B032E12-FFAF-3B91-B9A6-0510980143A7}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Simbody-build\SimTKcommon\sharedTarget\SimTKcommon.vcxproj">
+      <Project>{63EAA20D-D92E-3003-AC67-91468D312E74}</Project>
+      <Name>SimTKcommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Simbody-build\SimTKmath\sharedTarget\SimTKmath.vcxproj">
+      <Project>{803D0E6C-F417-33C2-A1F6-385FB2E3F052}</Project>
+      <Name>SimTKmath</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Simbody-build\Simbody\sharedTarget\SimTKsimbody.vcxproj">
+      <Project>{92953006-D41C-306A-BE33-5F11D27904A5}</Project>
+      <Name>SimTKsimbody</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Simbody-build\Simbody\Visualizer\simbody-visualizer\simbody-visualizer.vcxproj">
+      <Project>{E6A48DC4-4EC9-349B-973E-CF53ED8C155B}</Project>
+      <Name>simbody-visualizer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Pendulum.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
