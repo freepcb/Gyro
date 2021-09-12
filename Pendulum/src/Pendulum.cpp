@@ -3,6 +3,52 @@
 
 using namespace SimTK;
 
+int main()
+{
+	MultibodySystem system;
+	SimbodyMatterSubsystem matter(system);
+	GeneralForceSubsystem forces(system);
+	Force::UniformGravity gravity(forces, matter, Vec3(0, -9.8, 0));
+	Body::Rigid pendulumBody(MassProperties(1.0, Vec3(0), Inertia(1)));
+	pendulumBody.addDecoration(Transform(), DecorativeSphere(0.1));
+	
+	// There are 4 frames of reference for a MobilizedBody: 
+	//   P = parent body frame (grey in visualizer)
+	//	 F = joint frame in parent body (blue)
+	//   M = joint frame in child body (red)
+	//   B = child body frame (grey)
+	// Transforms: (include both translation and rotation)
+	//   X_PF from P to F 
+	//   X_BM from B to M 
+	// the pin joint fixes the origin of M at the origin of F,
+	// with the Z-axes of both frames aligned
+	
+	// pin joint between Ground and pendulum1: 
+	//   F: origin = 1 unit above P origin, axes rotated around X-axis by 0.5 rad
+	//   M: 1 unit along Y-axis from B origin
+	Transform X_PF(Rotation(0.5, XAxis), Vec3(0, 1, 0));
+	Transform X_BM(Vec3(0, 1, 0));
+	MobilizedBody::Pin pendulum1(matter.Ground(), X_PF,
+			pendulumBody, X_BM);
+	MobilizedBody::Pin pendulum2(pendulum1, Transform(Vec3(0)),
+		pendulumBody, Transform(Vec3(0, 1, 0)));
+	// Set up visualization.
+	Visualizer viz(system);
+	system.addEventReporter(new Visualizer::Reporter(viz, 0.01));
+
+	// Initialize the system and state.
+	system.realizeTopology();
+	State state = system.getDefaultState();
+	pendulum2.setRate(state, 5.0);
+	// Simulate it.
+	RungeKuttaMersonIntegrator integ(system);
+	TimeStepper ts(system, integ);
+	ts.initialize(state);
+	ts.stepTo(50.0);
+}
+
+
+#if 0
 //==============================================================================
 //                              SHOW DATA
 //==============================================================================
@@ -60,7 +106,7 @@ int main() {
 
     // Set initial conditions. Need a slight perturbation of angular velocity
     // to trigger the instability.
-    shaft.setQToFitTranslation(state, Vec3(0,0,.5));
+    shaft.setQToFitTranslation(state, Vec3(0,0,0.5));
     shaft.setUToFitAngularVelocity(state, Vec3(10,0,1e-10)); // 10 rad/s
     
     // Simulate it.
@@ -120,3 +166,4 @@ void ShowData::generateDecorations(const State&                state,
 	geometry.push_back(energy);
 	i++;
 }
+#endif

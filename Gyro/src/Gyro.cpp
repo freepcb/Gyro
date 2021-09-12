@@ -16,6 +16,37 @@ private:
     const MultibodySystem& m_mbs;
 };
 
+//==============================================================================
+//                         CUSTOM FORCE
+//==============================================================================
+class rotorTorque : public Force::Custom::Implementation 
+{
+public:
+	rotorTorque(SimbodyMatterSubsystem& matter) : matter(matter) {}
+
+	void calcForce(const State& state, Vector_<SpatialVec>& bodyForces,
+			Vector_<Vec3>& particleForces, Vector& mobilityForces) const 
+	{
+		Vec3 angVel(0);
+		MobilizedBodyIndex bi(1);
+		MobilizerUIndex ui(0);
+		const MobilizedBody& mobody1 = matter.getMobilizedBody(bi);
+		angVel = mobody1.getBodyAngularVelocity(state);	
+		printf("rpm = %.3f\r\n", 60*angVel[2]/(2*Pi));
+		mobilityForces[0] = 0.05;
+	}
+	Real calcPotentialEnergy(const State& state) const 
+	{
+		double energy = 0.0;
+		return energy;
+	}
+	bool dependsOnlyOnPositions() const 
+	{
+		return false;
+	}
+private:
+	SimbodyMatterSubsystem& matter;
+};
 
 //==============================================================================
 //                                  MAIN
@@ -26,62 +57,75 @@ int main() {
     // Create the system.   
     MultibodySystem system; system.setUpDirection(ZAxis);
     SimbodyMatterSubsystem matter(system);
-    // No gravity or other forces
+	GeneralForceSubsystem forces(system);
 
-    matter.setShowDefaultGeometry(false); // turn off frames and other junk
+	// Constuct the rotor as a single rectangular shape
+	Real density = 1000.0;	// density of rotor in kg/m^3
+	const Vec3 halfLengths(1.0, 0.055/2, 0.005/2);
+	Real rotor_mass = density * 2.* 0.055 * 0.0055;
+	Inertia rotor_MOI = rotor_mass * UnitInertia::brick(halfLengths);
+	Body::Rigid rotorBody(MassProperties(0.5, Vec3(0),
+							UnitInertia::brick(halfLengths)));
+	printf("Moments of inertia: %.4f, %.4f, %.4f\r\n", rotor_MOI.getMoments()[0],
+		rotor_MOI.getMoments()[1],
+		rotor_MOI.getMoments()[2]);
+	rotorBody.addDecoration(Transform(),
+		DecorativeBrick(halfLengths).setColor(Blue));
 
-    // Construct a single rigid body by welding together a cylindrical shaft
-    // and a rectangular bar.
-    Rotation YtoX(-Pi/2, ZAxis);
-    Body::Rigid shaftBody(MassProperties(1, Vec3(0),
-                            UnitInertia::cylinderAlongX(.02, .05)));
-    shaftBody.addDecoration(YtoX, 
-                            DecorativeCylinder(.02, .05).setColor(Red));
+	MobilizedBody::Pin rotor(matter.Ground(), Transform(),
+		rotorBody, Transform());
+	printf("Num mobodies %d\r\n", matter.getNumBodies());
 
-    const Vec3 halfLengths(.02,.04,.3);
-    Body::Rigid barBody(MassProperties(2, Vec3(0),
-                    UnitInertia::brick(halfLengths)));
-    barBody.addDecoration(Transform(),
-                          DecorativeBrick(halfLengths).setColor(Blue));
-
-    MobilizedBody::Free shaft(matter.Ground(), Transform(),
-                              shaftBody, Transform());
-    MobilizedBody::Weld bar(shaft, Vec3(-.05,0,0),
-                            barBody, Vec3(halfLengths[0],0,0));
-
-    // Visualize a frame every 1/60 s, and include the energy.
+	// Visualize a frame every 1/60 s, and include the energy.
     Visualizer viz(system); 
 	viz.setDesiredFrameRate(10);
     viz.addDecorationGenerator(new ShowData(system));
     system.addEventReporter(new Visualizer::Reporter(viz, 1./10));
 
     // Initialize the system and state. 
-    State state = system.realizeTopology();
+	Force::Custom(forces, new rotorTorque(matter));
+//	Force::DiscreteForces rotorDiscreteForce(forces, matter);
+	State state = system.realizeTopology();
 
-    // Set initial conditions. Need a slight perturbation of angular velocity
-    // to trigger the instability.
-    shaft.setQToFitTranslation(state, Vec3(0,0,.5));
-    shaft.setUToFitAngularVelocity(state, Vec3(10,0,1e-10)); // 10 rad/s
-    
+	// set initial conditions
+	rotor.setQToFitTranslation(state, Vec3(0, 0, .5));
+//	rotor.setUToFitAngularVelocity(state, Vec3(0, 0, 10)); // 10 rad/s
+	MobilizedBodyIndex bi(1);
+	MobilizerUIndex ui(0);
+	const MobilizedBody& mobody1 = matter.getMobilizedBody(bi);
+//	rotorDiscreteForce.setOneMobilityForce(state, mobody1, ui, 0.1);
+
     // Simulate it.
     RungeKuttaMersonIntegrator integ(system);
     integ.setAccuracy(1e-5);
     TimeStepper ts(system, integ);
     ts.initialize(state);
+
 	// set up loop
-	double timeStepSize = 0.1;
+	double timeStepSize = 0.01;
 	double timeTarget = timeStepSize;
 	double timeEnd = 10.0;
 	double timeCurrent = 0.0;
+	double torque = 0.0;
+	Vec3 angVel(0);
+	SpatialVec Vel6(0);
 	while (timeCurrent < timeEnd)
 	{
-		while((timeTarget-timeCurrent)>0.001)
+		while ((timeTarget - timeCurrent) > 0.0001)
 		{
 			// step until we reach timeTarget, in case stepTo() returns early
 			ts.stepTo(timeTarget);
 			timeCurrent = ts.getTime();
-			printf("%0.3f\r\n", timeCurrent);
+			const MobilizedBody& mobody1 = matter.getMobilizedBody(bi);
+//			torque = rotorDiscreteForce.getOneMobilityForce(state, mobody1, ui);
+			//			angVel = body1.getBodyAngularVelocity(state);
+			//			Vel6 = mobody1.getMobilizerVelocity(state);
+//			angVel = rotor.getBodyAngularVelocity(state);
+			printf("%.3f %.3f ", timeCurrent, torque);
+			printf("\r\n");
 		}
+		// update rotor torque
+//		rotorDiscreteForce.clearAllMobilityForces(state);
 		timeTarget += timeStepSize;
 	}
 	printf("done\r\n");
