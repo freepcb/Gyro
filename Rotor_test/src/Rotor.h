@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <vector>
 
 using namespace std;
 
@@ -57,31 +58,54 @@ public :
 		0.258, 0.244, 0.230, 0.208, 0.186, 0.164, 0.142, 0.120, 0.104, 0.088,
 		0.072, 0.056, 0.040, 0.036, 0.032, 0.028, 0.024, 0.020
 	};
-
-	inline double getClForAlpha(double& alpha) { return m_cl[int(round(alpha)) + m_array_start]; }
-	inline double getCdForAlpha(double& alpha) { return m_cd[int(round(alpha)) + m_array_start]; }
+	double getClForAlpha(double& alpha) {
+		int index = int(round(alpha)) - m_array_start;
+		double cl = m_cl[index];
+		return cl; 
+	}
+	double getCdForAlpha(double& alpha) {
+		int index = int(round(alpha)) - m_array_start;
+		double cd = m_cd[index];
+		return cd;
+	}
 
 };
 
 // class to represent a single rotor blade
 // assumes that the blade is attached to the edge of a hub that rotates around an axis
 // where:
-//   frame of reference is actually the initial frame of the hub, where
+//   frame of reference is actually the frame of the hub, where
 //     origin = center of hub
-//     z-axis = axis of rotation (also called "Up")
-//     x-axis = initial direction of long axis of blade 0
+//     z-axis = axis of rotation ("Up")
+//	   y-axis = direction of motion ("Forward")
+//     x-axis = long axis of blade 
 //   af = blade airfoil
-//   r_root = radius of root of blade from axis
-//   r_tip = radius of tip of blade from axis
+//   root_r = radius of root of blade from axis
+//   tip_r = radius of tip of blade from axis
 //   chord_length = chord
 //   pitch =  pitch of the chord relative to the plane of the hub
 //   nsegs = number of segments of blade to approximate variation of alpha along length
 
 class RotorBlade
 {
-	RotorBlade(Airfoil& af, double r_root, double r_tip, double chord_len,
+public:
+	RotorBlade(Airfoil* af, double root_r, double tip_r, double chord_len,
 		double pitch, int nsegs);
 	~RotorBlade() {};
+	void getForces(double angVel, double vertSpeed,
+		int printLevel, double& lift, double& torque);
 
-	double getForce(double airspeed, double alpha) {};
+	Airfoil* m_af;
+	double m_root_r;
+	double m_tip_r;
+	double m_chord_len;
+	double m_pitch;
+	int m_nsegs;
+	double m_seg_area;
+	double m_angVel;
+	double m_vertSpeed;
+	int m_printLevel;
+	vector<double> m_seg_r;	
+	vector<double> m_airspeed;
+	vector<double> m_alpha;
 };
