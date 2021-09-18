@@ -344,11 +344,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Rotor.cpp" />
     <ClCompile Include="src\Rotor_test.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Rotor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

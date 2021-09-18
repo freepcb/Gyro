@@ -83,7 +83,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Simbody-source\Platform\Windows\include;D:\Simbody-source\SimTKcommon\.\include;D:\Simbody-source\SimTKcommon\Scalar\include;D:\Simbody-source\SimTKcommon\SmallMatrix\include;D:\Simbody-source\SimTKcommon\Mechanics\include;D:\Simbody-source\SimTKcommon\BigMatrix\include;D:\Simbody-source\SimTKcommon\Geometry\include;D:\Simbody-source\SimTKcommon\Simulation\include;D:\Simbody-source\SimTKcommon\Random\include;D:\Simbody-source\SimTKcommon\Polynomial\include;D:\Simbody-source\SimTKmath\.\include;D:\Simbody-source\SimTKmath\LinearAlgebra\include;D:\Simbody-source\SimTKmath\Integrators\include;D:\Simbody-source\SimTKmath\Optimizers\include;D:\Simbody-source\SimTKmath\Geometry\include;D:\Simbody-source\Simbody\.\include;D:\Simbody-source\Simbody\Visualizer\include;D:\Simbody-source\examples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\Platform\Windows\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\SimTKcommon\.\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\SimTKcommon\Scalar\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\SimTKcommon\SmallMatrix\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\SimTKcommon\Mechanics\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\SimTKcommon\BigMatrix\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\SimTKcommon\Geometry\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\SimTKcommon\Simulation\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\SimTKcommon\Random\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\SimTKcommon\Polynomial\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\SimTKmath\.\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\SimTKmath\LinearAlgebra\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\SimTKmath\Integrators\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\SimTKmath\Optimizers\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\SimTKmath\Geometry\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\Simbody\include;C:\Users\Allan\Sync\Git\MyRepo\Gyro\Simbody-source-includes\Simbody\Visualizer\include;D:\Simbody-source\examples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -345,6 +345,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Gyro.cpp" />
+    <ClCompile Include="src\Rotor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Rotor.h" />

@@ -15,10 +15,9 @@
     <ClCompile Include="src\Gyro.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Rotor.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Rotor.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
+    <ClInclude Include="src\Rotor.h" />
   </ItemGroup>
 </Project>
