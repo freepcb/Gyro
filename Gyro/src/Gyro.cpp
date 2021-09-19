@@ -2,7 +2,7 @@
 #include <iostream>
 #include "..\..\..\Gyro\Rotor_test\src\Rotor.h"
 
-using namespace SimTK;  // test
+using namespace SimTK;  // test test
 
 // global variables for convenience
 const Real gravity = -9.8;	// acceleration due to gravity
