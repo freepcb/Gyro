@@ -30,7 +30,7 @@ RotorBlade bl(&af, bladeRootR, bladeTipR, bladeChord, bladePitch, bladeNsegs);
 //==============================================================================
 //                              SHOW DATA
 //==============================================================================
-// Generate text in the scene 
+// Generate text in the scene     kjlk
 class ShowData : public DecorationGenerator {
 public:
     explicit ShowData(const MultibodySystem& mbs) : m_mbs(mbs) {}
