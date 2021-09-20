@@ -4,4 +4,4 @@ This is a C++ project to simulate a passive, free-wheeling rotor as a recovery d
 
 Aerodynamic forces on the rotor are calculated using standard airfoil theory, currently for an SG6042 airfoil. A Rigid Body Physics engine is used for the dynamics, mainly to handle gyroscopic and Coriolis forces which are significant for a rotorcraft, particularly at model scale. For this I am using Simbody, from Stanford and the NIH, which seems to provide better accuracy than the gaming engines, and the documentation is excellent.
 
-I am using Microsoft Visual Studio 2017 on Windows 10, but the Simbody libraries can be built for Linux and MacOs so porting should be easy.
+I am using Microsoft Visual Studio 2017 on Windows 10
