@@ -77,36 +77,37 @@ void RotorBlade::getForces(double angVel, double vertSpeed, int printLevel,
 	// print
 	if (printLevel > 0)
 	{
+		printf("rotor blade data: angVel %.5f, rpm %.5f, vertSpeed %.5f\r\n", angVel, angVel * 60 / (2 * PI), vertSpeed);
 		printf("fspd:");
 		for (int iseg = 0; iseg < m_nsegs; iseg++)
-			printf("%6.2f ", spd[iseg]);
+			printf("%8.4f ", spd[iseg]);
 		printf("\r\naoa: ");
 		for (int iseg = 0; iseg < m_nsegs; iseg++)
-			printf("%6.2f ", aoa[iseg]);
+			printf("%8.4f ", aoa[iseg]);
 		printf("\r\nCL:  ");
 		for (int iseg = 0; iseg < m_nsegs; iseg++)
-			printf("%6.2f ", CL[iseg]);
+			printf("%8.4f ", CL[iseg]);
 		printf("\r\nCD:  ");
 		for (int iseg = 0; iseg < m_nsegs; iseg++)
-			printf("%6.2f ", CD[iseg]);
+			printf("%8.4f ", CD[iseg]);
 		printf("\r\nL:   ");
 		for (int iseg = 0; iseg < m_nsegs; iseg++)
-			printf("%6.3f ", L[iseg]);
+			printf("%8.4f ", L[iseg]);
 		printf("\r\nLup: ");
 		for (int iseg = 0; iseg < m_nsegs; iseg++)
-			printf("%6.3f ", Lup[iseg]);
+			printf("%8.4f ", Lup[iseg]);
 		printf("\r\nLfwd:");
 		for (int iseg = 0; iseg < m_nsegs; iseg++)
-			printf("%6.3f ", Lfwd[iseg]);
+			printf("%8.4f ", Lfwd[iseg]);
 		printf("\r\nD:   ");
 		for (int iseg = 0; iseg < m_nsegs; iseg++)
-			printf("%6.3f ", D[iseg]);
+			printf("%8.4f ", D[iseg]);
 		printf("\r\nDup: ");
 		for (int iseg = 0; iseg < m_nsegs; iseg++)
-			printf("%6.3f ", Dup[iseg]);
+			printf("%8.4f ", Dup[iseg]);
 		printf("\r\nDfwd:");
 		for (int iseg = 0; iseg < m_nsegs; iseg++)
-			printf("%6.3f ", Dfwd[iseg]);
+			printf("%8.4f ", Dfwd[iseg]);
 		printf("\r\n");
 	}
 	// return values

@@ -15,7 +15,6 @@ Real g_velZ = -0.001;		// initial rotor vert speed to avoid divide-by-zero error
 Real g_altitude = 0.0;		// rotor altitude;
 // rotor parameters
 Airfoil af;						// use default SG6042 airfoil
-const double rotorMOI = 0.2;
 const int numBlades = 2;
 const int bladeNsegs = 18;		// number of segments to approximate spanwise variation
 const double bladeRootR = 0.1;  // distance of blade root from hub axis
@@ -59,16 +58,18 @@ public:
 		Real t = state.getTime();
 		Real lift;		// will be set by bl.getForces()	
 		Real torque;	// will be set by bl.getForces()
-		const int printLevel = 1;
-		bl.getForces(angVel[2], g_velZ, 0, lift, torque);	// don't print
+		const int printLevel = 0;
+		bl.getForces(angVel[2], g_velZ, printLevel, lift, torque);	// for single blade
+		lift = lift * 2;	// for 2 blades
+		torque = torque * 2;
+		g_torque = torque;	
+		g_lift = lift;		
 		if(printLevel)
-			printf("t: %.3f, lift %.3f, torque %.3f\r\n", t, lift, torque);
+			printf("update rotor forces: t: %.5f, lift %.5f, torque %.5f\r\n\r\n", t, lift, torque);
 		// now apply them for time step
 		Real dt = t - g_last_time;
 		g_velZ = g_velZ + dt * (gravity + lift / g_mass);
 		g_altitude = g_altitude + dt * g_velZ;
-		g_torque = torque*2;	// for 2 blades
-		g_lift = lift*2;		//     "
 		g_last_time = t;
 		// apply torque to the hub joint
 		mobilityForces[0] = torque;
@@ -98,8 +99,8 @@ public:
 		system.realize(state, Stage::Position);   // so that variables can be accessed
 //		Vec3 pos = mobod.getBodyOriginLocation(state);
 		Vec3 angVel = mobod.getBodyAngularVelocity(state);
-		printf("t %0.3f, RPM %.3f, ROD %.2f, alt %.2f, lift %.3f, torque %.3f, \r\n",
-			g_last_time, angVel[2] * 60 / (2 * Pi), g_velZ, g_altitude, g_lift,
+		printf("event: t %0.5f, RPM %.5f, ROD %.5f, alt %.2f, lift %.5f, torque %.5f, \r\n",
+			state.getTime(), angVel[2] * 60 / (2 * Pi), g_velZ, g_altitude, g_lift,
 			g_torque);
 	}
 private:
@@ -157,7 +158,7 @@ int main() {
 		bladeI.getMoments()[2]
 	);
 	// create decoration for the blade
-	blade_body.addDecoration(Transform(), DecorativeBrick(bladeHalfLengths).setColor(Blue));
+//	blade_body.addDecoration(Transform(), DecorativeBrick(bladeHalfLengths).setColor(Blue));
 
 	// create MobilizedBody for blade 1
 	Real blade_cm_offset = hubR + bladeLen/2;
