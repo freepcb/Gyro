@@ -4,8 +4,10 @@
 #include <string>
 #include <cmath>
 #include <vector>
+#include "Simbody.h"
 
 using namespace std;
+using namespace SimTK;
 
 // Airfoil polar data, currently just for SG6042  
 class Airfoil
@@ -88,6 +90,7 @@ public:
 //   chordLen = chord length
 //   pitch = pitch of the chord relative to the plane of the hub (degrees)
 //   nsegs = blade is segmented to approximate variation of alpha along length
+// if a flap hinge is added, then the Z-axis will no longer be the hub Z-axis
 
 class RotorBlade
 {
@@ -95,8 +98,13 @@ public:
 	RotorBlade(Airfoil* af, double rootR, double tipR, double chordLen,
 		double pitch, int nsegs);
 	~RotorBlade() {};
-	void getForces(double angVel, double vertSpeed,
-		int printLevel, double& lift, double& torque);
+
+	// for getForces():
+	//   relWind is the vector of the airflow relative to the blade
+	//   angVel is the angular velocity of the blade
+	void getForces(Vec3 relWind, double angVel,
+//	void getForces(double velZ, double angle, double angVel,
+			int printLevel, double& lift, double& torque);
 private:
 	Airfoil* m_af;
 	double m_rootR;

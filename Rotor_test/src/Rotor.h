@@ -95,7 +95,7 @@ public:
 	RotorBlade(Airfoil* af, double rootR, double tipR, double chordLen,
 		double pitch, int nsegs);
 	~RotorBlade() {};
-	void getForces(double angVel, double vertSpeed,
+	void getForces(double windVel, double windAngle, double angle, double angVel, double vertSpeed,
 		int printLevel, double& lift, double& torque);
 private:
 	Airfoil* m_af;

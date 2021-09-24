@@ -1,12 +1,14 @@
 // Implementation of classes for handling rotor aerodynamics
 
 #include <vector>
+#include "Simbody.h"
 #include "Rotor.h"
 using namespace std;
+using namespace SimTK;
 
 #define PI 3.14159265358979323846
 
-// note that pitch is in degrees, not radians
+// note that pitch is in degrees
 RotorBlade::RotorBlade(Airfoil* af, double rootR, double tipR, double chordLen,
 	double pitch, int nsegs)
 {
@@ -19,14 +21,14 @@ RotorBlade::RotorBlade(Airfoil* af, double rootR, double tipR, double chordLen,
 	double bladeLen = m_tipR - m_rootR;
 	double segLen = bladeLen / nsegs;
 	m_segArea = m_chordLen * segLen;
-	for (int iseg = 0; iseg < nsegs; iseg++)
-	{
-		m_seg_r.push_back(iseg*segLen + m_rootR + 0.5*segLen); // center of segment
-	}
+	for (int iseg = 0; iseg < nsegs; iseg++)	
+		m_seg_r.push_back(iseg*segLen + m_rootR + 0.5*segLen); // radii of centers of segments	}
 };
 
-void RotorBlade::getForces(double angVel, double vertSpeed, int printLevel, 
-	double& lift, double& torque)
+// note: windVel should already be adjusted for the blade angle but not angular velocity, 
+// since this creates a relative wind for the airfoil that varies along the length of the blade
+void RotorBlade::getForces(Vec3 windVel, double angVel,
+		int printLevel, double& lift, double& torque)
 {
 	const double rho = 1.204;     // density of dry air in kg / m ^ 3
 	double netLift = 0.0;
@@ -42,12 +44,15 @@ void RotorBlade::getForces(double angVel, double vertSpeed, int printLevel,
 	vector<double> D;		D.reserve(m_nsegs);
 	vector<double> Dup;		Dup.reserve(m_nsegs);
 	vector<double> Dfwd;	Dfwd.reserve(m_nsegs);
+	if (angVel < 0.00001)
+		angVel = 0.00001;
+	double vertSpeed = windVel[2];  // vertical airspeed
 	for (int iseg = 0; iseg < m_nsegs; iseg++)
 	{
-		double fwdSpeed = m_seg_r[iseg] * angVel;  // forward speed of this segment
+		double fwdSpeed = windVel[1] + m_seg_r[iseg] * angVel;   // forward airspeed of this segment (Y)
 		double v_squared = fwdSpeed*fwdSpeed + vertSpeed*vertSpeed;
 		double v = sqrt(v_squared);	// speed of relative wind
-		double v_angle = atan2(-vertSpeed, fwdSpeed) * 180 / PI; // degrees
+		double v_angle = atan2(-vertSpeed, fwdSpeed) * 180 / PI; // airflow angle relative to Y
 		double alpha = v_angle + m_pitch;		// airfoil angle of attack
 		double cl = m_af->getClForAlpha(alpha);
 		double cd = m_af->getCdForAlpha(alpha);
@@ -59,6 +64,8 @@ void RotorBlade::getForces(double angVel, double vertSpeed, int printLevel,
 		double drag_fwd = -drag * fwdSpeed / v; // forward component of airfoil drag
 		netLift += lift_up + drag_up;
 		netTorque += (lift_fwd + drag_fwd) * m_seg_r[iseg];
+		if (netLift > 10 || vertSpeed > 0.0)
+			printf("********** Error ************\r\n");
 		// save values for printing
 		if (printLevel > 0)
 		{
