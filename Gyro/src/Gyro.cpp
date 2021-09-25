@@ -60,7 +60,7 @@ public:
 		MobilizedBodyIndex bi_bl1(2), bi_bl2(3);	// assume blade body indices follow hub
 		const MobilizedBody& blade1_mobody = matter.getMobilizedBody(bi_bl1);
 		const MobilizedBody& blade2_mobody = matter.getMobilizedBody(bi_bl2);
-		// get angular velocity of hub
+		// get angular velocity of hub for reporting purposes
 		Vec3 angVel = hub_mobody.getBodyAngularVelocity(state);
 		g_angVel = angVel[2];
 		// get angles of both blades (should always be 360/num_blades apart)
@@ -70,32 +70,38 @@ public:
 		double blade2Angle = (180 / Pi)*atan2(blade2XInG[1], blade2XInG[0]);
 		// update aerodynamic forces
 		Real t = state.getTime();
-		Real lift1;		// value will be set by bl.getForces()	
-		Real torque1;	// value will be set by bl.getForces()
-		Real lift2;		// value will be set by bl.getForces()	
-		Real torque2;	// value will be set by bl.getForces()
+		Real lift1 = 0;		// value will actually be set by bl.getForces()	
+		Real torque1 = 0;	//            "
+		Real lift2 = 0;		//            "
+		Real torque2 = 0;	//            "
 		const int printLevel = 0;
-		bl.getForces(Vec3(0, 0, g_velZ), g_angVel, printLevel, lift1, torque1);	
-		bl.getForces(Vec3(0, 0, g_velZ), g_angVel, printLevel, lift2, torque2);	
-		double lift = lift1 + lift2;	
-		double torque = torque1 + torque2;
-		g_torque = torque;	
-		g_lift = lift;		
-		if (printLevel)
+		// added slight crosswind along X
+//		bl.getForces(state, blade1_mobody, Vec3(.01, 0, -g_velZ), g_angVel, printLevel, lift1, torque1);
+//		bl.getForces(state, blade2_mobody, Vec3(.01, 0, -g_velZ), g_angVel, printLevel, lift2, torque2);
+		bl.getForces(state, blade1_mobody, Vec3(0, 0, 0), printLevel, lift1, torque1);
+		bl.getForces(state, blade2_mobody, Vec3(0, 0, 0), printLevel, lift2, torque2);
+//		double torque = torque1 + torque2;
+//		g_torque = torque;	
+		g_lift = lift1 + lift2;
+//		if (printLevel)
 			printf("update rotor forces: t: %.5f, angle %5.1f, lift1 %.5f, torque1 %.5f, lift2 %.5f, torque2 %.5f\r\n\r\n", 
 				t, blade1Angle, lift1, torque1, lift2, torque2);
 		// now apply them for time step
 		Real dt = t - g_last_time;
-		g_velZ = g_velZ + dt * (gravity + lift / g_mass);
+		g_velZ = g_velZ + dt * (gravity + g_lift / g_mass);
 		g_altitude = g_altitude + dt * g_velZ;
 		g_last_time = t;
 		// apply torque to blades as external forces
-		double force = torque / ((bladeRootR + bladeTipR)/2);	// force to be applied at CM of both blades
-		Vec3 force1(0, force, 0);	// force along local Y  to be transformed to Ground frame
-		Vec3 force2(0, force, 0);	// for now, same for both blades
-		Vec3 forceInG1 = blade1_mobody.expressVectorInGroundFrame(state, force1);
+		double force1 = torque1 / ((bladeRootR + bladeTipR) / 2);	// force to be applied at CM 
+		double force2 = torque2 / ((bladeRootR + bladeTipR) / 2);	// force to be applied at CM 
+//		double diff_lift = (lift2 - lift1)/2;
+//		Vec3 force1(0, force, diff_lift);	// force along local Y  to be transformed to Ground frame
+//		Vec3 force2(0, force, -diff_lift);	// for now, same for both blades
+		Vec3 vecForce1(0, force1, lift1);	// force along local Y  to be transformed to Ground frame
+		Vec3 vecForce2(0, force2, lift2);	// for now, same for both blades
+		Vec3 forceInG1 = blade1_mobody.expressVectorInGroundFrame(state, vecForce1);
 		blade1_mobody.applyBodyForce(state, SpatialVec(Vec3(0), forceInG1), bodyForces);
-		Vec3 forceInG2 = blade2_mobody.expressVectorInGroundFrame(state, force2);
+		Vec3 forceInG2 = blade2_mobody.expressVectorInGroundFrame(state, vecForce2);
 		blade2_mobody.applyBodyForce(state, SpatialVec(Vec3(0), forceInG2), bodyForces);
 		g_hubCenter = hub_mobody.findStationLocationInGround(state, Vec3(0));
 	}
@@ -149,7 +155,7 @@ int main() {
     MultibodySystem system; system.setUpDirection(ZAxis);
     SimbodyMatterSubsystem matter(system);
 	GeneralForceSubsystem forces(system);
-//	Force::UniformGravity gravity(forces, matter, Vec3(0, 0, 0.1));
+	Force::UniformGravity gravity(forces, matter, Vec3(0, 0, 0.1));
 //	matter.setShowDefaultGeometry(false); // turn off frames 
 
 	// keep track of MobilizedBody indices
@@ -159,9 +165,9 @@ int main() {
 	// and multiple blades attached to the circumference of the hub
 	// with welds or hinges
 	const Real bladeDensity = 1000.0;	// density of rotor blades in kg/m^3
-	const Real hubR = 0.05;
+	const Real hubR = 0.1;
 	const Real hubThick = 0.01;
-	const Real bladeLen = 0.95;
+	const Real bladeLen = 0.9;
 	const Real bladeChord = 0.055;
 	const Real bladeThick = 0.005;
 	const Real bladeMass = bladeDensity * bladeLen * bladeChord * bladeThick;
@@ -219,7 +225,7 @@ int main() {
 
 	// Visualize a frame every 1/10 s
     Visualizer viz(system); 
-	viz.setDesiredFrameRate(10);
+	viz.setDesiredFrameRate(100);
     viz.addDecorationGenerator(new ShowData(system));
     system.addEventReporter(new Visualizer::Reporter(viz, 1./10));
 	viz.addFrameController(new Visualizer::BodyFollower(hub_mobody, Vec3(0), 

@@ -100,10 +100,11 @@ public:
 	~RotorBlade() {};
 
 	// for getForces():
-	//   relWind is the vector of the airflow relative to the blade
+	//   state = Simbody state
+	//	 mobod = mobilized body for blade
+	//   windVel is the vector of the airflow in the Ground frame
 	//   angVel is the angular velocity of the blade
-	void getForces(Vec3 relWind, double angVel,
-//	void getForces(double velZ, double angle, double angVel,
+	void getForces(const State& state, const MobilizedBody& mobod, Vec3 windVelG, 
 			int printLevel, double& lift, double& torque);
 private:
 	Airfoil* m_af;
