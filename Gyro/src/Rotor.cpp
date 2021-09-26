@@ -46,7 +46,7 @@ void RotorBlade::getForces(const State& state, const MobilizedBody& mobod, Vec3 
 	vector<double> D(m_nsegs);
 	vector<double> Dup(m_nsegs);
 	vector<double> Dfwd(m_nsegs);
-	// calculate relative wind at blade tip and root in local frame
+	// calculate relative wind at blade tip and root in G
 	// there MUST be an easier way to do this!
 	double bladeLen = m_tipR - m_rootR;
 	double segLen = bladeLen / m_nsegs;
@@ -62,19 +62,24 @@ void RotorBlade::getForces(const State& state, const MobilizedBody& mobod, Vec3 
 	Vec3 bodyUnitYG = mobod.expressVectorInGroundFrame(state, Vec3(0, 1, 0)); // blade Y unit vector
 	Vec3 bodyUnitZG = mobod.expressVectorInGroundFrame(state, Vec3(0, 0, 1)); // blade Z unit vector
 	// these are dot products
-	double tipVelY = ~tipStationVelG * bodyUnitYG;		// airspeed in Y
-	double tipVelZ = ~tipStationVelG * bodyUnitZG;		// airspeed in Z
+	double tipVelY = ~tipStationVelG * bodyUnitYG;		// airspeed along Y
+	double tipVelZ = ~tipStationVelG * bodyUnitZG;		// airspeed along Z
 	double rootVelY = ~rootStationVelG * bodyUnitYG;	
-	double rootVelZ = ~rootStationVelG * bodyUnitZG;	
+	double rootVelZ = ~rootStationVelG * bodyUnitZG;
+	if (printLevel)
+	{
+		printf("blade:UZ %5.3f %5.3f %5.3f root:vY %6.2f vZ %6.2f tip:vY %6.2f vZ %6.2f\r\n", 
+			bodyUnitZG[0], bodyUnitZG[1], bodyUnitZG[2], rootVelY, rootVelZ, tipVelY, tipVelZ);
+	}
 	for (int iseg = 0; iseg < m_nsegs; iseg++)
 	{
-		double vertSpeed = rootVelZ + iseg * (tipVelZ - rootVelZ) / (m_nsegs - 1);
 		double fwdSpeed = rootVelY + iseg * (tipVelY-rootVelY) / (m_nsegs - 1);
+		double vertSpeed = rootVelZ + iseg * (tipVelZ - rootVelZ) / (m_nsegs - 1);
 		double v_squared = fwdSpeed*fwdSpeed + vertSpeed*vertSpeed;
 		double v = sqrt(v_squared);	// speed of relative wind
 		if (v < 0.00001)
 			v = 0.00001;
-		double v_angle = atan2(vertSpeed, fwdSpeed) * 180 / PI; // airflow angle relative to Y
+		double v_angle = atan2(-vertSpeed, fwdSpeed) * 180 / PI; // airflow angle relative to Y
 		double alpha = v_angle + m_pitch;		// airfoil angle of attack
 		double cl = m_af->getClForAlpha(alpha);
 		double cd = m_af->getCdForAlpha(alpha);
@@ -89,7 +94,7 @@ void RotorBlade::getForces(const State& state, const MobilizedBody& mobod, Vec3 
 //		if (netLift > 10 || vertSpeed > 0.0)
 //			std::printf("********** Error ************\r\n");
 		// save values for printing
-		if (printLevel > 0)
+		if (printLevel > 1)
 		{
 			spd.push_back(fwdSpeed);
 			aoa.push_back(alpha);
@@ -104,7 +109,7 @@ void RotorBlade::getForces(const State& state, const MobilizedBody& mobod, Vec3 
 		}
 	}
 	// print
-	if (printLevel > 0)
+	if (printLevel > 1)
 	{
 		std::printf("rotor blade data: angVel %.5f, rpm %.5f, vertSpeed %.5f\r\n", angVel, angVel * 60 / (2 * PI), windVelG[2]);
 		std::printf("fspd:");

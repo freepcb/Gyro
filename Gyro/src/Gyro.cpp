@@ -12,7 +12,7 @@ Real g_lift = 0.0;			// rotor lift
 Real g_torque = 0.0;		// rotor torque
 Real g_angVel = 0.0;		// rotor ang vel
 Real g_rpm = 0.0;			// rotor RPM
-Real g_velZ = -0.001;		// initial rotor vert speed to avoid divide-by-zero errors
+// Real g_velZ = -1.0;		// initial rotor vert speed to avoid divide-by-zero errors
 Real g_altitude = 0.0;		// rotor altitude;
 Vec3 g_hubCenter(0);
 
@@ -70,35 +70,33 @@ public:
 		double blade2Angle = (180 / Pi)*atan2(blade2XInG[1], blade2XInG[0]);
 		// update aerodynamic forces
 		Real t = state.getTime();
-		Real lift1 = 0;		// value will actually be set by bl.getForces()	
+		Real lift1 = 0;		// values will actually be set by bl.getForces()	
 		Real torque1 = 0;	//            "
 		Real lift2 = 0;		//            "
 		Real torque2 = 0;	//            "
 		const int printLevel = 0;
 		// added slight crosswind along X
-//		bl.getForces(state, blade1_mobody, Vec3(.01, 0, -g_velZ), g_angVel, printLevel, lift1, torque1);
-//		bl.getForces(state, blade2_mobody, Vec3(.01, 0, -g_velZ), g_angVel, printLevel, lift2, torque2);
+//		bl.getForces(state, blade1_mobody, Vec3(.01, 0, -g_velZ), printLevel, lift1, torque1);
+//		bl.getForces(state, blade2_mobody, Vec3(.01, 0, -g_velZ), printLevel, lift2, torque2);
 		bl.getForces(state, blade1_mobody, Vec3(0, 0, 0), printLevel, lift1, torque1);
 		bl.getForces(state, blade2_mobody, Vec3(0, 0, 0), printLevel, lift2, torque2);
-//		double torque = torque1 + torque2;
-//		g_torque = torque;	
+		g_torque = torque1 + torque2;
 		g_lift = lift1 + lift2;
+		Vec3 hubVel = hub_mobody.getBodyOriginVelocity(state);
+		Vec3 hubPos = hub_mobody.getBodyOriginLocation(state);
+		g_altitude = hubPos[2];
 //		if (printLevel)
-			printf("update rotor forces: t: %.5f, angle %5.1f, lift1 %.5f, torque1 %.5f, lift2 %.5f, torque2 %.5f\r\n\r\n", 
-				t, blade1Angle, lift1, torque1, lift2, torque2);
-		// now apply them for time step
-		Real dt = t - g_last_time;
-		g_velZ = g_velZ + dt * (gravity + g_lift / g_mass);
-		g_altitude = g_altitude + dt * g_velZ;
+			printf("t: %.5f, angle %5.1f, RPM %6.2f, alt %5.0f, ROD %5.2f, L1 %.5f, T1 %.5f, L2 %.5f, T2 %.5f\r\n", 
+				t, blade1Angle, angVel[2]*60/(2*Pi), hubPos[2], hubVel[2], lift1, torque1, lift2, torque2);
 		g_last_time = t;
 		// apply torque to blades as external forces
-		double force1 = torque1 / ((bladeRootR + bladeTipR) / 2);	// force to be applied at CM 
-		double force2 = torque2 / ((bladeRootR + bladeTipR) / 2);	// force to be applied at CM 
+		double thrust1 = torque1 / ((bladeRootR + bladeTipR) / 2);	// force to be applied at CM 
+		double thrust2 = torque2 / ((bladeRootR + bladeTipR) / 2);	// force to be applied at CM 
 //		double diff_lift = (lift2 - lift1)/2;
-//		Vec3 force1(0, force, diff_lift);	// force along local Y  to be transformed to Ground frame
-//		Vec3 force2(0, force, -diff_lift);	// for now, same for both blades
-		Vec3 vecForce1(0, force1, lift1);	// force along local Y  to be transformed to Ground frame
-		Vec3 vecForce2(0, force2, lift2);	// for now, same for both blades
+//		Vec3 vecForce1(0, force1, 0);	// force along local Y  to be transformed to Ground frame
+//		Vec3 vecForce2(0, force2, 0);	// for now, same for both blades
+		Vec3 vecForce1(0, thrust1, lift1);	// force along local Y  to be transformed to Ground frame
+		Vec3 vecForce2(0, thrust2, lift2);
 		Vec3 forceInG1 = blade1_mobody.expressVectorInGroundFrame(state, vecForce1);
 		blade1_mobody.applyBodyForce(state, SpatialVec(Vec3(0), forceInG1), bodyForces);
 		Vec3 forceInG2 = blade2_mobody.expressVectorInGroundFrame(state, vecForce2);
@@ -136,8 +134,8 @@ public:
 	void handleEvent(const State& state) const {
 		system.realize(state, Stage::Position);   // so that variables can be accessed
 		Vec3 angVel = mobod.getBodyAngularVelocity(state);
-		printf("event: t %0.5f, RPM %.5f, ROD %.5f, alt %.2f, lift %.5f, torque %.5f, \r\n",
-			state.getTime(), angVel[2] * 60 / (2 * Pi), g_velZ, g_altitude, g_lift, g_torque);
+		printf("event: t %0.5f, RPM %.5f, alt %.2f, lift %.5f, torque %.5f, \r\n",
+			state.getTime(), angVel[2] * 60 / (2 * Pi), g_altitude, g_lift, g_torque);
 	}
 private:
 	const MultibodySystem& system;
@@ -155,7 +153,7 @@ int main() {
     MultibodySystem system; system.setUpDirection(ZAxis);
     SimbodyMatterSubsystem matter(system);
 	GeneralForceSubsystem forces(system);
-	Force::UniformGravity gravity(forces, matter, Vec3(0, 0, 0.1));
+	Force::UniformGravity gravity(forces, matter, Vec3(0, 0, -9.8));
 //	matter.setShowDefaultGeometry(false); // turn off frames 
 
 	// keep track of MobilizedBody indices
@@ -170,7 +168,27 @@ int main() {
 	const Real bladeLen = 0.9;
 	const Real bladeChord = 0.055;
 	const Real bladeThick = 0.005;
-	const Real bladeMass = bladeDensity * bladeLen * bladeChord * bladeThick;
+	const Real bladeM = 0.2;
+
+	// create motor body
+	const Real motorLen = 1;	// 20 cm
+	const Real motorR = 0.05;	// 5 cm
+	const Real motorM = 1;		// 5 kg
+	Inertia motorI = motorM * UnitInertia::cylinderAlongZ(motorR, motorLen/2); // MOI of motor 
+	Body::Rigid motor_body(MassProperties(motorM, Vec3(0), motorI));
+	// create decoration for the motor
+	Rotation R;
+	R.setRotationFromAngleAboutX(Pi / 2);
+	Transform X(R);
+	// note: DecorativeCylinder is oriented along Y so needs to be rotated
+	// use half/length
+	motor_body.addDecoration(X, DecorativeCylinder(motorR, motorLen/2).setColor(Red));
+	// create MobilizedBody for the motor
+	MobilizedBody::Free motor_mobody(matter.Ground(), Transform(),
+		motor_body, Transform(Vec3(0,0, -motorLen/2)));	// joint at bottom of motor
+	bi++;
+	MobilizedBodyIndex bi_motor(bi);
+
 
 	// create hub body
 	Real hubM = 0;	// ignore mass properties of hub
@@ -182,20 +200,21 @@ int main() {
 		hubI.getMoments()[2]
 		);
 	// create decoration for the hub
-	Rotation R;
-	R.setRotationFromAngleAboutX(Pi/2);
-	Transform X(R);
-	hub_body.addDecoration(X, DecorativeCylinder(hubR, hubThick).setColor(Blue));
+	Rotation hub_R;
+	hub_R.setRotationFromAngleAboutX(Pi/2);
+	Transform hubX(hub_R);
+	hub_body.addDecoration(hubX, DecorativeSphere(hubR).setColor(Red));
 	// create MobilizedBody for the hub
-	MobilizedBody::Free hub_mobody(matter.Ground(), Transform(),
+	// joint at top of motor and center of hub
+	MobilizedBody::Weld hub_mobody(motor_mobody, Transform(Vec3(0, 0, motorLen/2)), 
 		hub_body, Transform());
 	bi++;
 	MobilizedBodyIndex bi_hub(bi);
 
 	// now create body for the blades
 	const Vec3 bladeHalfLengths(bladeLen/2, bladeChord/2, bladeThick/2);
-	Inertia bladeI = bladeMass * UnitInertia::brick(bladeHalfLengths); // MOI of blade
-	Body::Rigid blade_body(MassProperties(bladeMass, Vec3(0), bladeI));
+	Inertia bladeI = bladeM * UnitInertia::brick(bladeHalfLengths); // MOI of blade
+	Body::Rigid blade_body(MassProperties(bladeM, Vec3(0), bladeI));
 	printf("Blade: Ixx %.4f, Iyy %.4f, Izz %.4f\r\n",
 		bladeI.getMoments()[0],
 		bladeI.getMoments()[1],
@@ -205,18 +224,21 @@ int main() {
 	blade_body.addDecoration(Transform(), DecorativeBrick(bladeHalfLengths).setColor(Blue));
 
 	// create MobilizedBody for blade 1
-	Real blade_cm_offset = hubR + bladeLen/2;
-	Transform X_PF1(Vec3(blade_cm_offset, 0, 0));
-	MobilizedBody::Weld blade_mobody1(hub_mobody, X_PF1,
-		blade_body, Transform());
+	Real blade_cm_offset = hubR + bladeLen/2;  
+	Transform X_F1(Vec3(hubR, 0, 0));
+	Transform X_M1(Vec3(-bladeLen / 2, 0, 0));
+	MobilizedBody::Weld blade_mobody1(hub_mobody, X_F1,
+		blade_body, X_M1);
 	bi++;
 	MobilizedBodyIndex bi_blade1(bi);
 
 	// create MobilizedBody for blade 2
-	R.setRotationFromAngleAboutZ(Pi);
-	Transform X_PF2(R,Vec3(-blade_cm_offset, 0, 0));
-	MobilizedBody::Weld blade_mobody2(hub_mobody, X_PF2,
-		blade_body, Transform());
+	Rotation blade_R;
+	blade_R.setRotationFromAngleAboutZ(Pi);	// rotate 180 around Z, to reverse Y
+	Transform X_F2(blade_R,Vec3(-hubR, 0, 0)); // shift opposite to blade 1
+	Transform X_M2(Vec3(-bladeLen / 2, 0, 0));
+	MobilizedBody::Weld blade_mobody2(hub_mobody, X_F2,
+		blade_body, X_M2);
 	bi++;
 	MobilizedBodyIndex bi_blade2(bi);
 
@@ -227,7 +249,7 @@ int main() {
     Visualizer viz(system); 
 	viz.setDesiredFrameRate(100);
     viz.addDecorationGenerator(new ShowData(system));
-    system.addEventReporter(new Visualizer::Reporter(viz, 1./10));
+    system.addEventReporter(new Visualizer::Reporter(viz, 1./10.));
 	viz.addFrameController(new Visualizer::BodyFollower(hub_mobody, Vec3(0), 
 	         Vec3(0, 5, 1), UnitVec3(0, 0, 1)));
 
