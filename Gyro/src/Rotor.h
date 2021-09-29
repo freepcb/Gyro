@@ -16,13 +16,19 @@ public :
 	Airfoil() {};
 	~Airfoil() {};
 private:
+#if 0
 	string m_name_str = "SG6042";
 	int m_arrayStart = -7;	// arrays are from -7 to 180 degrees
 	double m_cl[188] = {
 		-0.385, -0.432, -0.442, -0.346, -0.250, -0.134, -0.0346, 0.0455, 0.127, 0.228,
 		0.402, 0.557, 0.709, 0.903, 1.123, 1.208, 1.289, 1.361, 1.3891, 1.2867,
-		1.115, 0.943, 0.771, 0.737, 0.703, 0.668, 0.634, 0.6, 0.614, 0.628,
-		0.642, 0.656, 0.67, 0.698, 0.726, 0.754, 0.782, 0.81, 0.844, 0.878,
+#endif
+	string m_name_str = "NACA0015";
+	int m_arrayStart = 0;	// arrays are from 0 to 180 degrees
+	double m_cl[181] = {
+		0.0, 0.2042, 0.4321, 0.5298, 0.6009, 0.6764, 0.743, 0.8088, 0.868, 0.9132, 0.9434, 1.0, 1.03,
+		1.05, 1.05, 0.96, 0.62, 0.6, 0.6, 0.634, 0.6, 0.6, 0.6,  // alpha 13 ...
+		0.62, 0.656, 0.67, 0.698, 0.726, 0.754, 0.782, 0.81, 0.844, 0.878,
 		0.912, 0.946, 0.98, 0.988, 0.996, 1.004, 1.012, 1.02, 1.024, 1.028,
 		1.032, 1.036, 1.04, 1.032, 1.024, 1.016, 1.008, 1, 0.99, 0.98,
 		0.97, 0.96, 0.95, 0.934, 0.918, 0.902, 0.886, 0.87, 0.846, 0.822,
@@ -39,8 +45,13 @@ private:
 		-0.66, -0.67, -0.68, -0.72, -0.76, -0.8, -0.84, -0.88000, -0.838, -0.796,
 		-0.754, -0.712, -0.67000, -0.536, -0.402, -0.268, -0.134, 0.0
 	};
+#if 0
 	double m_cd[188] = {
 		0.100, 0.093, 0.083, 0.063, 0.042, 0.033, 0.029, 0.026, 0.029, 0.033,
+		0.039, 0.042, 0.044, 0.038, 0.029, 0.033, 0.040, 0.050, 0.062, 0.079,
+#endif
+	double m_cd[181] = {
+		0.026, 0.029, 0.033,
 		0.039, 0.042, 0.044, 0.038, 0.029, 0.033, 0.040, 0.050, 0.062, 0.079,
 		0.111, 0.144, 0.177, 0.210, 0.222, 0.245, 0.267, 0.290, 0.312, 0.334,
 		0.356, 0.378, 0.400, 0.430, 0.460, 0.490, 0.520, 0.550, 0.582, 0.614,
@@ -63,13 +74,23 @@ private:
 public:
 	double getClForAlpha(double& alpha) 
 	{
-		int index = int(round(alpha)) - m_arrayStart;
-		double cl = m_cl[index];
-		return cl; 
+		double cl;
+		int index = int(round(alpha)) - m_arrayStart; // nearest integer	
+		if (index < 0)
+			// alpha = -alpha, invert lift
+			cl = -m_cl[-index];	 
+		else if (index > 180)
+			// alpha = 360 - alpha, invert lift
+			cl = -m_cl[360 - index];  
+		else
+			cl = m_cl[index];
+		return cl;
 	}
 	double getCdForAlpha(double& alpha) 
 	{
 		int index = int(round(alpha)) - m_arrayStart;
+		if (index < 0)
+			index = -index;	// invert alpha
 		double cd = m_cd[index];
 		return cd;
 	}
@@ -104,18 +125,20 @@ public:
 	//	 mobod = mobilized body for blade
 	//   windVel is the vector of the airflow in the Ground frame
 	//   angVel is the angular velocity of the blade
-	void getForces(const State& state, const MobilizedBody& mobod, Vec3 windVelG, 
-			int printLevel, double& lift, double& torque);
+	void getForces(const State& state, const MobilizedBody& mobod, Vec3 windVelG,
+		int printLevel, double& lift, double& rLift, double& thrust, double& rThrust);
 private:
 	Airfoil* m_af;
 	double m_rootR;
 	double m_tipR;
 	double m_chordLen;
+	double m_rey_coef;		// Reynolds number per m/sec
 	double m_pitch;
 	int m_nsegs;
 	double m_segArea;
 	double m_angVel;
 	double m_vertSpeed;
 	int m_printLevel;
-	vector<double> m_seg_r;	
+	vector<double> m_seg_x;
+	vector<double> m_seg_x_from_hub_Z;
 };
