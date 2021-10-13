@@ -126,11 +126,10 @@ public:
 	//   windVel is the vector of the airflow in the Ground frame
 	//   angVel is the angular velocity of the blade
 	void getForces(const State& state, const MobilizedBody& mobod, Vec3 windVelG,
-		int printLevel, double& lift, double& rLift, double& thrust, double& rThrust);
-private:
+		int printLevel, double& FZroot, double& FZtip, double& FYroot, double& FYtip);
+public:
 	Airfoil* m_af;
-	double m_rootR;
-	double m_tipR;
+	double m_bladeLenX;
 	double m_chordLen;
 	double m_rey_coef;		// Reynolds number per m/sec
 	double m_pitch;
@@ -140,5 +139,4 @@ private:
 	double m_vertSpeed;
 	int m_printLevel;
 	vector<double> m_seg_x;
-	vector<double> m_seg_x_from_hub_Z;
 };
