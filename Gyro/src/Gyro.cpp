@@ -4,36 +4,43 @@
 
 using namespace SimTK; 
 
-// global variables for convenience
+// global variables for convenience and laziness
 // indices for mobilized bodies so they can be called by name
-int i_base = 1;
-int i_motor = i_base++;
-int i_hub = i_base++;
-int i_bl1 = i_base++;
+int i_base = 1;				// ground frame
+int i_motor = i_base++;		// motor mount
+int i_hub = i_base++;		// rotor hub
+int i_bl1 = i_base++;		// rotor blades
 int i_bl2 = i_base++;
 int i_bl3 = i_base++;
 int i_bl4 = i_base++;
 
-const Real gravity = -9.8;	// acceleration due to gravity
-const Real g_mass = 0.5;	// airframe mass
+// dimensions of rotor hub and blades
+const Real bladeDensity = 1000.0;	// density of rotor blades in kg/m^3
+const Real hubR = 0.05;				// hub radius, where blades are attached
+const Real hubThick = 0.01;			// hub thickness
+const Real bladeLen = 0.95;			// length of blade with airfoil
+const double bladeRootR = hubR;		// distance of blade root from hub axis
+const double bladeTipR = bladeLen + hubR;  // distance of blade tip from hub axis
+const Real bladeChord = 0.055;		// chord length of airfoil
+const Real bladeThick = 0.005;		// average thickness of blade with airfoil
+const Real bladeM = bladeDensity* bladeLen*bladeChord*bladeThick; // blade mass
+const int numBlades = 4;			// number of blades in rotor
+const int bladeNsegs = 18;			// number of airfoil segments per blades 
+
+// physical and simulation constants
+const Real gravity = -9.8;	// acceleration due to gravity in kg/sec^2
+const Real g_mass = 1.5;	// airframe mass
 Real g_last_time = 0.0;		// time of last update
 Real g_lift = 0.0;			// rotor lift
 Real g_torque = 0.0;		// rotor torque
 Real g_angVel = 0.0;		// rotor ang vel
 Real g_rpm = 0.0;			// rotor RPM
-// Real g_velZ = -1.0;		// initial rotor vert speed to avoid divide-by-zero errors
 Real g_altitude = 0.0;		// rotor altitude;
 Vec3 g_hubCenter(0);
 
 // rotor objects and parameters
-Airfoil af;						 // airfoil for blades, uses SG6042 by defailt
-const int numBlades = 2;		 // num blades in rotor
-const int bladeNsegs = 18;		 // number of segments to approximate spanwise variation
-const double bladeRootR = 0.1;   // distance of blade root from hub axis
-const double bladeTipR = 1.0;
-const double bladeLen = bladeTipR - bladeRootR;
+Airfoil af;						 // airfoil for blades
 // distance of blade tip from hub axis
-const double bladeChord = 0.055; // blade airfoil chord
 const double bladePitch = -6.0;  // blade pitch (degrees)
 double bladeLift;				 // net upward lift from blade
 double bladeTorque;				 // net torque from blade
@@ -231,14 +238,6 @@ int main() {
 	// Constuct the rotor from a cylindrical hub with a pin joint
 	// and multiple blades attached to the circumference of the hub
 	// with welds or hinges
-	const Real bladeDensity = 1000.0;	// density of rotor blades in kg/m^3
-	const Real hubR = 0.05;
-	const Real hubThick = 0.01;
-	const Real bladeLen = 0.9;
-	const Real bladeChord = 0.055;
-	const Real bladeThick = 0.005;
-	const Real bladeM = 0.25;
-
 	// create motor body
 	const Real motorLen = 2;	
 	const Real motorR = 0.05;	// 5 cm
@@ -353,19 +352,23 @@ int main() {
 	integ.setAccuracy(1e-4);
 
 	// set initial conditions
+	const double initial_ROD = 7.38;
+	const double initial_RPM = 11.5;
+	const double initial_ang_vel = initial_RPM * 2.0 * Pi/60.0;
+//#if 0
 //	rotor.setQToFitTranslation(state, Vec3(0, 0, .5));
-	hub_mobody.setUToFitAngularVelocity(state, Vec3(0, 0, 5));
-	blade1_mobody.setUToFitAngularVelocity(state, Vec3(0, 0, 5));
-	blade2_mobody.setUToFitAngularVelocity(state, Vec3(0, 0, 5));
-	blade3_mobody.setUToFitAngularVelocity(state, Vec3(0, 0, 5));
-	blade4_mobody.setUToFitAngularVelocity(state, Vec3(0, 0, 5));
-	motor_mobody.setUToFitLinearVelocity(state, Vec3(0, 0, -1));
-	hub_mobody.setUToFitLinearVelocity(state, Vec3(0, 0, -1));
-	blade1_mobody.setUToFitLinearVelocity(state, Vec3(0, 0, -1));
-	blade2_mobody.setUToFitLinearVelocity(state, Vec3(0, 0, -1));
-	blade3_mobody.setUToFitLinearVelocity(state, Vec3(0, 0, -1));
-	blade4_mobody.setUToFitLinearVelocity(state, Vec3(0, 0, -1));
-
+	hub_mobody.setUToFitAngularVelocity(state, Vec3(0, 0, initial_ang_vel));
+	blade1_mobody.setUToFitAngularVelocity(state, Vec3(0, 0, initial_ang_vel));
+	blade2_mobody.setUToFitAngularVelocity(state, Vec3(0, 0, initial_ang_vel));
+	blade3_mobody.setUToFitAngularVelocity(state, Vec3(0, 0, initial_ang_vel));
+	blade4_mobody.setUToFitAngularVelocity(state, Vec3(0, 0, initial_ang_vel));
+	motor_mobody.setUToFitLinearVelocity(state, Vec3(0, 0, -initial_ROD));
+	hub_mobody.setUToFitLinearVelocity(state, Vec3(0, 0, -initial_ROD));
+	blade1_mobody.setUToFitLinearVelocity(state, Vec3(0, 0, -initial_ROD));
+	blade2_mobody.setUToFitLinearVelocity(state, Vec3(0, 0, -initial_ROD));
+	blade3_mobody.setUToFitLinearVelocity(state, Vec3(0, 0, -initial_ROD));
+	blade4_mobody.setUToFitLinearVelocity(state, Vec3(0, 0, -initial_ROD));
+//#endif
 	// Simulate it.
     TimeStepper ts(system, integ);
     ts.initialize(state);
