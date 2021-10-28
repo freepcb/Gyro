@@ -13,35 +13,46 @@ RotorBlade::RotorBlade(Airfoil* af, double rootR, double tipR, double chordLen,
 	double pitch, int nsegs)
 {
 	m_af = af;
-//	m_rootR = rootR;
-//	m_tipR = tipR;
 	m_chordLen = chordLen;
 	m_pitch = pitch;
 	m_nsegs = nsegs;
-	m_bladeLenX = tipR - rootR;
-	double segLen = m_bladeLenX / nsegs;
-	m_segArea = m_chordLen * segLen;
+	m_bladeLenX = tipR - rootR;	  // length of blade long X axis
+	double segLen = m_bladeLenX / nsegs;  // length of each segment
+	m_segArea = m_chordLen * segLen;	  // area of segment			
 	// get position of segment centers from hub axis and blade center
 	for (int iseg = 0; iseg < nsegs; iseg++)
 	{
-		double x_from_root = iseg * segLen + 0.5*segLen;	 // x distance of segment center from root
-		m_seg_x.push_back(x_from_root - (m_bladeLenX / 2));	 // x-coord of segment center
+		m_seg_x.push_back(iseg * segLen + 0.5*segLen - (m_bladeLenX / 2));	 // x-coord of segment center
 	}
 	m_rey_coef = 70698 * m_chordLen;	// Reynolds number for v = 1 m/sec
 };
 
-// function getForces() 
-// calculates aerodynamic forces on a rotor blade
-// divides the blade into sections to approximate continuous variation along blade
-// then outputs net forces and net moments
-// inputs:
-//   windVelG = the wind velocity in the Ground frame
-//   printLevel = 0 for none, 1 to print outputs, >1 to print details
-// outputs:
-//   lift = net force along Z-axis of blade (ie. "up")
-//   xLift = x-coord of center of lift
-//   thrust = net force acting along Y-axis of blade (ie. "fwd")
-//   xThrust = x-coord of center of thrust
+// Implementation of RotorBlade::getForces() 
+// Calculates aerodynamic forces on a rotor blade
+// Assumes that the blade is a rectngular structure attached to a hub where 
+//   the axis of rotation of the hub determines the forward direction of the blade
+// The end of the blade closest to the hub is called the "root" and the opposite end
+//   is called the "tip"
+// Uses a local frame of reference where:
+//   the origin is at the center of mass
+//   the X axis is along the long axis of the blade
+//   the Y axis is along the forward direction of rotation
+//	 the Z axis may be considered "up" relative to the X-Y plane of rotation
+// Assumes that the cross-section of the blade is an airfoil, where the angle 
+//   between the chord of the iirfoil and the Y axis is called the "pitch"
+// Divides the blade into sections to approximate continuous variation along the blade
+// Calculates net forces and torques on/around the Z and Y local axes from the sections
+//   and coverts these to equivalent forces at the root and tip ends of the blade
+// Inputs:
+//   state = SimBody state of the rigid-body simulation 
+//   mobod = mobilized body for the blade as defined in SimBody 
+//   windVelG = external wind velocity in the Ground frame (if present)
+//   printLevel = 0 for none, 1 to print outputs, 2 to print details
+// Outputs (these are arguments defined as references which are modified):
+//   FZroot = equivalent force along local Z axis at the root
+//   FZtip = equivalent force along local Z axis at the tip
+//   FYroot = equivalent force along local Y axis at the root
+//   FYtip = equivalent force along local Y axis at the tip
 //
 void RotorBlade::getForces(const State& state, const MobilizedBody& mobod, Vec3 windVelG, 
 		int printLevel, double& FZroot, double& FZtip, double& FYroot, double& FYtip)

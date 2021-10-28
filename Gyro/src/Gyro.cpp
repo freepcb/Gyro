@@ -16,9 +16,9 @@ int i_bl4 = i_base++;
 
 // dimensions of rotor hub and blades
 const Real bladeDensity = 1000.0;	// density of rotor blades in kg/m^3
-const Real hubR = 0.05;				// hub radius, where blades are attached
+const Real hubR = 0.1;				// hub radius, where blades are attached
 const Real hubThick = 0.01;			// hub thickness
-const Real bladeLen = 0.95;			// length of blade with airfoil
+const Real bladeLen = 0.9;			// length of blade with airfoil
 const double bladeRootR = hubR;		// distance of blade root from hub axis
 const double bladeTipR = bladeLen + hubR;  // distance of blade tip from hub axis
 const Real bladeChord = 0.055;		// chord length of airfoil
@@ -86,32 +86,37 @@ public:
 //			state.getTime(), vel[1][0], vel[1][1], vel[1][2], vel[0][2] * 60 / (2 * Pi), g_altitude);
 		g_angVel = vel[0][2];
 
-		Vec3 angVel = vel[0];		// get angleof blade 1
+		Vec3 angVel = vel[0];		// get ang velocity of hub
 		Vec3 blade1XInG = blade1_mobody.expressVectorInGroundFrame(state, Vec3(1, 0, 0));
 		double blade1Angle = (180 / Pi)*atan2(blade1XInG[1], blade1XInG[0]);
 		Real t = state.getTime();
 		// update aerodynamic forces
-		// these values will actually be set by bl.getForces()
+		// these variables will actually be set by bl.getForces()
 		Real FZroot1 = 0; Real FZtip1 = 0; Real FYroot1 = 0; Real FYtip1 = 0;
 		Real FZroot2 = 0; Real FZtip2 = 0; Real FYroot2 = 0; Real FYtip2 = 0;
 		Real FZroot3 = 0; Real FZtip3 = 0; Real FYroot3 = 0; Real FYtip3 = 0;
 		Real FZroot4 = 0; Real FZtip4 = 0; Real FYroot4 = 0; Real FYtip4 = 0;
 		double xoff = bl.m_bladeLenX/2;
-		const int printLevel = 2;
-		bl.getForces(state, blade1_mobody, Vec3(0, 0, 0), printLevel, FZroot1, FZtip1, FYroot1, FYtip1);
-		bl.getForces(state, blade2_mobody, Vec3(0, 0, 0), printLevel, FZroot2, FZtip2, FYroot2, FYtip2);
-		bl.getForces(state, blade3_mobody, Vec3(0, 0, 0), printLevel, FZroot3, FZtip3, FYroot3, FYtip3);
-		bl.getForces(state, blade4_mobody, Vec3(0, 0, 0), printLevel, FZroot4, FZtip4, FYroot4, FYtip4);
-		double torque1 = FYtip1*bladeLen;
-		double torque2 = FYtip2*bladeLen;
-		double torque3 = FYtip3*bladeLen;
-		double torque4 = FYtip4*bladeLen;
+		int printLevel = 0;
+		// set wind velocity to small updraft to avoid divide by zero or atan2() errors
+		bl.getForces(state, blade1_mobody, Vec3(0, 0, 0.0001), printLevel, FZroot1, FZtip1, FYroot1, FYtip1);
+		printLevel = 0;
+		bl.getForces(state, blade2_mobody, Vec3(0, 0, 0.0001), printLevel, FZroot2, FZtip2, FYroot2, FYtip2);
+		bl.getForces(state, blade3_mobody, Vec3(0, 0, 0.0001), printLevel, FZroot3, FZtip3, FYroot3, FYtip3);
+		bl.getForces(state, blade4_mobody, Vec3(0, 0, 0.0001), printLevel, FZroot4, FZtip4, FYroot4, FYtip4);
+		// calculate rotor thrust torque on the hub, just for information
+		double torque1 = FYtip1 * (bladeLen + hubR) + FYroot1 * hubR;
+		double torque2 = FYtip2 * (bladeLen + hubR) + FYroot2 * hubR;
+		double torque3 = FYtip3 * (bladeLen + hubR) + FYroot3 * hubR;
+		double torque4 = FYtip4 * (bladeLen + hubR) + FYroot4 * hubR;
+		// calculate lift on the hub, just for information
 		double lift1 = FZroot1 + FZtip1;
 		double lift2 = FZroot2 + FZtip2;
 		double lift3 = FZroot3 + FZtip3;
 		double lift4 = FZroot4 + FZtip4;
 		g_torque = torque1 + torque2 + torque3 + torque4;
 		g_lift = lift1 + lift2 + lift3 + lift4;
+		// get hub velocity and position
 		Vec3 hubVel = vel[1];
 		Vec3 hubPos = hub_mobody.getBodyOriginLocation(state);
 		g_altitude = hubPos[2];
@@ -120,7 +125,7 @@ public:
 				t, blade1Angle, angVel[2]*60/(2*Pi), hubPos[2], hubVel[2], 
 				g_lift, lift1, lift2, lift3, lift4, g_torque, torque1, torque2, torque3, torque4);
 		g_last_time = t;
-		// apply lift and thrust to blades as external forces
+		// apply lift and thrust to blades as external forces at the blade roots and tips
 		// start by creating force vectors in blade frames
 		Vec3 vecFZroot1(0, 0, FZroot1);
 		Vec3 vecFZroot2(0, 0, FZroot2);
@@ -156,14 +161,14 @@ public:
 		Vec3 vecFYtipInG3 = blade3_mobody.expressVectorInGroundFrame(state, vecFYtip3);
 		Vec3 vecFYtipInG4 = blade4_mobody.expressVectorInGroundFrame(state, vecFYtip4);
 		// apply forces to blade roots and tips
-		blade1_mobody.applyForceToBodyPoint(state, Vec3(-xoff, 0, 0), vecFYrootInG1, bodyForces);
-		blade2_mobody.applyForceToBodyPoint(state, Vec3(-xoff, 0, 0), vecFYrootInG2, bodyForces);
-		blade3_mobody.applyForceToBodyPoint(state, Vec3(-xoff, 0, 0), vecFYrootInG3, bodyForces);
-		blade4_mobody.applyForceToBodyPoint(state, Vec3(-xoff, 0, 0), vecFYrootInG4, bodyForces);
-		blade1_mobody.applyForceToBodyPoint(state, Vec3(xoff, 0, 0), vecFYtipInG1, bodyForces);
-		blade2_mobody.applyForceToBodyPoint(state, Vec3(xoff, 0, 0), vecFYtipInG2, bodyForces);
-		blade3_mobody.applyForceToBodyPoint(state, Vec3(xoff, 0, 0), vecFYtipInG3, bodyForces);
-		blade4_mobody.applyForceToBodyPoint(state, Vec3(xoff, 0, 0), vecFYtipInG4, bodyForces);
+		blade1_mobody.applyForceToBodyPoint(state, Vec3(-xoff, 0, 0), vecFZrootInG1, bodyForces);
+		blade2_mobody.applyForceToBodyPoint(state, Vec3(-xoff, 0, 0), vecFZrootInG2, bodyForces);
+		blade3_mobody.applyForceToBodyPoint(state, Vec3(-xoff, 0, 0), vecFZrootInG3, bodyForces);
+		blade4_mobody.applyForceToBodyPoint(state, Vec3(-xoff, 0, 0), vecFZrootInG4, bodyForces);
+		blade1_mobody.applyForceToBodyPoint(state, Vec3(xoff, 0, 0), vecFZtipInG1, bodyForces);
+		blade2_mobody.applyForceToBodyPoint(state, Vec3(xoff, 0, 0), vecFZtipInG2, bodyForces);
+		blade3_mobody.applyForceToBodyPoint(state, Vec3(xoff, 0, 0), vecFZtipInG3, bodyForces);
+		blade4_mobody.applyForceToBodyPoint(state, Vec3(xoff, 0, 0), vecFZtipInG4, bodyForces);
 		blade1_mobody.applyForceToBodyPoint(state, Vec3(-xoff, 0, 0), vecFYrootInG1, bodyForces);
 		blade2_mobody.applyForceToBodyPoint(state, Vec3(-xoff, 0, 0), vecFYrootInG2, bodyForces);
 		blade3_mobody.applyForceToBodyPoint(state, Vec3(-xoff, 0, 0), vecFYrootInG3, bodyForces);
@@ -230,7 +235,7 @@ int main() {
     SimbodyMatterSubsystem matter(system);
 	GeneralForceSubsystem forces(system);
 	Force::UniformGravity gravity(forces, matter, Vec3(0, 0, -9.8));
-//	matter.setShowDefaultGeometry(false); // turn off frames 
+	matter.setShowDefaultGeometry(false); // turn off frames 
 
 	// keep track of MobilizedBody indices
 	int bi = 0;
@@ -290,7 +295,7 @@ int main() {
 	blade_body.addDecoration(Transform(), DecorativeBrick(bladeHalfLengths).setColor(Blue));
 
 	// create MobilizedBody for blade 1
-	const double flapAng = 0; 
+	const double flapAng = .25; 
 	Transform X_F1(Vec3(hubR, 0, 0));
 	Rotation blade_RF1;
 	blade_RF1.setRotationFromAngleAboutY(flapAng);	// flap angle
@@ -352,8 +357,8 @@ int main() {
 	integ.setAccuracy(1e-4);
 
 	// set initial conditions
-	const double initial_ROD = 7.38;
-	const double initial_RPM = 11.5;
+	const double initial_ROD = 1;
+	const double initial_RPM = 0;
 	const double initial_ang_vel = initial_RPM * 2.0 * Pi/60.0;
 //#if 0
 //	rotor.setQToFitTranslation(state, Vec3(0, 0, .5));
@@ -372,7 +377,7 @@ int main() {
 	// Simulate it.
     TimeStepper ts(system, integ);
     ts.initialize(state);
-	ts.stepTo(100);
+	ts.stepTo(200);
 
 	printf("done\r\n");
   } 
