@@ -1,11 +1,13 @@
 #include "Simbody.h"
 #include <iostream>
 #include "Rotor.h"
+#include "Rocket.h"
 
 using namespace SimTK; 
 
 // global variables for convenience and laziness
 // indices for mobilized bodies so they can be called by name
+// must be defined in same order as creation of mobodies
 int i_base = 1;				// ground frame
 int i_motor = i_base++;		// motor mount
 int i_hub = i_base++;		// rotor hub
@@ -13,6 +15,10 @@ int i_bl1 = i_base++;		// rotor blades
 int i_bl2 = i_base++;
 int i_bl3 = i_base++;
 int i_bl4 = i_base++;
+int i_fin1 = i_base++;		// fins
+int i_fin2 = i_base++;
+int i_fin3 = i_base++;
+int i_fin4 = i_base++;
 
 // dimensions of rotor hub and blades
 const Real bladeDensity = 1000.0;	// density of rotor blades in kg/m^3
@@ -23,9 +29,19 @@ const double bladeRootR = hubR;		// distance of blade root from hub axis
 const double bladeTipR = bladeLen + hubR;  // distance of blade tip from hub axis
 const Real bladeChord = 0.055;		// chord length of airfoil
 const Real bladeThick = 0.005;		// average thickness of blade with airfoil
-const Real bladeM = bladeDensity* bladeLen*bladeChord*bladeThick; // blade mass
+const Real bladeM = bladeDensity* bladeLen * bladeChord * bladeThick; // blade mass
 const int numBlades = 4;			// number of blades in rotor
 const int bladeNsegs = 18;			// number of airfoil segments per blades 
+// dimensions of fins
+const Real finDensity = 1000.0;
+const Real finThick = 0.003;		// thickness = 3 mm
+const Real finLen = 0.5;		    // length = .5 m (spanwise)
+const Real finChord = 0.5;		    // chord length = .5 m
+const Real finM = finDensity * finLen * finChord * finThick;	// kg
+// dimensions of motor (ie. fuselage)
+const Real motorLen = 1;	// 2 m
+const Real motorR = 0.1;	// 10 cm
+const Real motorM = 0.5;	// 0.5 kg
 
 // physical and simulation constants
 const Real gravity = -9.8;	// acceleration due to gravity in kg/sec^2
@@ -46,6 +62,8 @@ double bladeLift;				 // net upward lift from blade
 double bladeTorque;				 // net torque from blade
 // single blade object, since all blades are the same
 RotorBlade bl(&af, bladeRootR, bladeTipR, bladeChord, bladePitch, bladeNsegs);
+// single fin object
+Fin fin(finDensity, finLen, finChord, finThick);
 
 
 //==============================================================================
@@ -72,8 +90,13 @@ public:
 	void calcForce(const State& state, Vector_<SpatialVec>& bodyForces,
 			Vector_<Vec3>& particleForces, Vector& mobilityForces) const 
 	{
+		//** debugging
+		MobilizedBodyIndex bi_fin1(i_fin1);
+		const MobilizedBody& fin1_mobody = matter.getMobilizedBody(bi_fin1);
+		fin.getForces(state, fin1_mobody, 1);
+
 		// get mobilized bodies for hub and blades
-		MobilizedBodyIndex bi_hub(i_hub);	
+		MobilizedBodyIndex bi_hub(i_hub);
 		const MobilizedBody& hub_mobody = matter.getMobilizedBody(bi_hub);
 		MobilizedBodyIndex bi_bl1(i_bl1), bi_bl2(i_bl2), bi_bl3(i_bl3), bi_bl4(i_bl4);
 		const MobilizedBody& blade1_mobody = matter.getMobilizedBody(bi_bl1);
@@ -235,18 +258,11 @@ int main() {
     SimbodyMatterSubsystem matter(system);
 	GeneralForceSubsystem forces(system);
 	Force::UniformGravity gravity(forces, matter, Vec3(0, 0, -9.8));
-	matter.setShowDefaultGeometry(false); // turn off frames 
 
-	// keep track of MobilizedBody indices
-	int bi = 0;
+	// turn off drawing reference frames 
+//	matter.setShowDefaultGeometry(false); 
 
-	// Constuct the rotor from a cylindrical hub with a pin joint
-	// and multiple blades attached to the circumference of the hub
-	// with welds or hinges
-	// create motor body
-	const Real motorLen = 2;	
-	const Real motorR = 0.05;	// 5 cm
-	const Real motorM = 0.5;	
+	// create cylindrical motor body with long axis = Z
 	Inertia motorI = motorM * UnitInertia::cylinderAlongZ(motorR, motorLen/2); // MOI of motor 
 	Body::Rigid motor_body(MassProperties(motorM, Vec3(0), motorI));
 	// create decoration for the motor
@@ -261,9 +277,8 @@ int main() {
 		motor_body, Transform(Vec3(0,0, -motorLen/2)));	// joint at bottom of motor
 	MobilizedBodyIndex bi_motor(i_motor);
 
-
 	// create hub body
-	Real hubM = 0;	// ignore mass properties of hub
+	Real hubM = 0;	// ignore inertial properties of hub
 	Inertia hubI = hubM * UnitInertia::cylinderAlongZ(hubR, hubThick); // MOI of hub
 	Body::Rigid hub_body(MassProperties(hubM, Vec3(0), hubI));
 	printf("Hub: Ixx %.4f, Iyy %.4f, Izz %.4f\r\n",
@@ -271,15 +286,15 @@ int main() {
 		hubI.getMoments()[1],
 		hubI.getMoments()[2]
 		);
-	// create decoration for the hub
+	// create decoration for the hub as a sphere, not a cylinder
 	Rotation hub_R;
 	hub_R.setRotationFromAngleAboutX(Pi/2);
 	Transform hubX(hub_R);
 	hub_body.addDecoration(hubX, DecorativeSphere(hubR).setColor(Red));
 	// create MobilizedBody for the hub
-	// joint at top of motor and center of hub
-	MobilizedBody::Pin hub_mobody(motor_mobody, Transform(Vec3(0, 0, motorLen/2)), 
-		hub_body, Transform());
+	// with pin joint at top of motor and center of hub
+	MobilizedBody::Pin hub_mobody(motor_mobody, Transform(Vec3(0, 0, motorLen / 2)),
+			hub_body, Transform());
 	MobilizedBodyIndex bi_hub(i_hub);
 
 	// now create body for the blades
@@ -295,60 +310,107 @@ int main() {
 	blade_body.addDecoration(Transform(), DecorativeBrick(bladeHalfLengths).setColor(Blue));
 
 	// create MobilizedBody for blade 1
-	const double flapAng = .25; 
-	Transform X_F1(Vec3(hubR, 0, 0));
-	Rotation blade_RF1;
-	blade_RF1.setRotationFromAngleAboutY(flapAng);	// flap angle
-	Transform X_M1(blade_RF1, Vec3(-bladeLen / 2, 0, 0));
-	MobilizedBody::Weld blade1_mobody(hub_mobody, X_F1,
-		blade_body, X_M1);
+	const double flapAng = .2; 
+	Transform X_bladeF1(Vec3(hubR, 0, 0));	// fixed mob frame at X edge of hub
+	Rotation R_bladeF1;
+	R_bladeF1.setRotationFromAngleAboutY(flapAng);	// set flap angle
+	Transform X_bladeM1(R_bladeF1, Vec3(-bladeLen / 2, 0, 0));	// moving mob frame
+	MobilizedBody::Weld blade1_mobody(hub_mobody, X_bladeF1,		// weld blade to hub
+		blade_body, X_bladeM1);
 	MobilizedBodyIndex bi_blade1(i_bl1);
 
 	// create MobilizedBody for blade 2
-	Rotation blade_RF2;
-	blade_RF2.setRotationFromAngleAboutZ(Pi/2);	// rotate 90 deg around Z
-	Transform X_F2(blade_RF2, Vec3(0, hubR, 0)); // 
-	Rotation blade_RM2;
-	blade_RM2.setRotationFromAngleAboutY(flapAng);	// flap angle
-	Transform X_M2(blade_RM2, Vec3(-bladeLen / 2, 0, 0));
-	MobilizedBody::Weld blade2_mobody(hub_mobody, X_F2,
-		blade_body, X_M2);
+	Rotation R_bladeF2;
+	R_bladeF2.setRotationFromAngleAboutZ(Pi/2);	// rotate 90 deg around Z
+	Transform X_bladeF2(R_bladeF2, Vec3(0, hubR, 0)); // fixed mob frame at Y edge of hub 
+	Rotation R_bladeM2;
+	R_bladeM2.setRotationFromAngleAboutY(flapAng);	
+	Transform X_bladeM2(R_bladeM2, Vec3(-bladeLen / 2, 0, 0));
+	MobilizedBody::Weld blade2_mobody(hub_mobody, X_bladeF2,
+		blade_body, X_bladeM2);
 	MobilizedBodyIndex bi_blade2(i_bl2);
 
 	// create MobilizedBody for blade 3
-	Rotation blade_RF3;
-	blade_RF3.setRotationFromAngleAboutZ(Pi);	// rotate 180 deg around Z, to reverse Y
-	Transform X_F3(blade_RF3, Vec3(-hubR, 0, 0)); // shift opposite to blade 1
-	Rotation blade_RM3;
-	blade_RM3.setRotationFromAngleAboutY(flapAng);	// flap angle
-	Transform X_M3(blade_RM3, Vec3(-bladeLen / 2, 0, 0));
-	MobilizedBody::Weld blade3_mobody(hub_mobody, X_F3,
-		blade_body, X_M3);
+	Rotation R_bladeF3;
+	R_bladeF3.setRotationFromAngleAboutZ(Pi);	// rotate 180 deg around Z
+	Transform X_bladeF3(R_bladeF3, Vec3(-hubR, 0, 0)); // fixed mob frame at -X edge of hub
+	Rotation R_bladeM3;
+	R_bladeM3.setRotationFromAngleAboutY(flapAng);	// flap angle
+	Transform X_bladeM3(R_bladeM3, Vec3(-bladeLen / 2, 0, 0));
+	MobilizedBody::Weld blade3_mobody(hub_mobody, X_bladeF3,
+		blade_body, X_bladeM3);
 	MobilizedBodyIndex bi_blade3(i_bl3);
 
 	// create MobilizedBody for blade 4
-	Rotation blade_RF4;
-	blade_RF4.setRotationFromAngleAboutZ(3*Pi/2);	// rotate 270 deg  around Z, to reverse Y
-	Transform X_F4(blade_RF4, Vec3(0, -hubR, 0)); // shift opposite to blade 3
-	Rotation blade_RM4;
-	blade_RM4.setRotationFromAngleAboutY(flapAng);	// flap angle
-	Transform X_M4(blade_RM4, Vec3(-bladeLen / 2, 0, 0));
-	MobilizedBody::Weld blade4_mobody(hub_mobody, X_F4,
-		blade_body, X_M4);
+	Rotation R_bladeF4;
+	R_bladeF4.setRotationFromAngleAboutZ(3*Pi/2); // rotate 270 deg  around Z
+	Transform X_bladeF4(R_bladeF4, Vec3(0, -hubR, 0)); // fixed mob frame at -Y edge of hub
+	Rotation R_bladeM4;
+	R_bladeM4.setRotationFromAngleAboutY(flapAng);	// flap angle
+	Transform X_bladeM4(R_bladeM4, Vec3(-bladeLen / 2, 0, 0));
+	MobilizedBody::Weld blade4_mobody(hub_mobody, X_bladeF4,
+		blade_body, X_bladeM4);
 	MobilizedBodyIndex bi_blade4(i_bl4);
 
+	// now create body for the fins, axes are X = span, Y = normal, Z toward forward edge
+	const Vec3 finHalfLengths(finChord / 2, finThick / 2, finLen / 2);
+	Inertia finI = finM * UnitInertia::brick(finHalfLengths); // MOI of fin
+	Body::Rigid fin_body(MassProperties(finM, Vec3(0), finI));
+	printf("Fin: Ixx %.4f, Iyy %.4f, Izz %.4f\r\n",
+		finI.getMoments()[0],
+		finI.getMoments()[1],
+		finI.getMoments()[2]
+	);
+	// create decoration for the fin
+	fin_body.addDecoration(Transform(), DecorativeBrick(finHalfLengths).setColor(Green));
 
-	// add event reporter, call every 0.01 sec
+	// create MobilizedBody for fin 1
+	Rotation R_finF1;
+	R_finF1.setRotationFromAngleAboutZ(0);
+	Transform X_fin_F1(R_finF1, Vec3(motorR, 0, -motorLen / 2 + finChord / 2));	// fixed mob frame at X edge of motor at rear
+	Transform X_fin_M1(Vec3(-finChord / 2, 0, 0));		// moving mob frame
+	MobilizedBody::Weld fin1_mobody(motor_mobody, X_fin_F1,		// weld blade to hub
+		fin_body, X_fin_M1);
+	MobilizedBodyIndex bi_fin1(i_fin1);
+
+	// create MobilizedBody for fin 2
+	Rotation R_finF2;
+	R_finF2.setRotationFromAngleAboutZ(Pi / 2);
+	Transform X_fin_F2(R_finF2, Vec3(0, motorR, -motorLen / 2 + finChord / 2));	// fixed mob frame at X edge of motor at rear
+	Transform X_fin_M2(Vec3(-finChord / 2, 0, 0));		// moving mob frame
+	MobilizedBody::Weld fin2_mobody(motor_mobody, X_fin_F2,		// weld blade to hub
+		fin_body, X_fin_M2);
+	MobilizedBodyIndex bi_fin2(i_fin2);
+
+	// create MobilizedBody for fin 3
+	Rotation R_finF3;
+	R_finF3.setRotationFromAngleAboutZ(Pi);
+	Transform X_fin_F3(R_finF3, Vec3(-motorR, 0, -motorLen / 2 + finChord / 2));	// fixed mob frame at X edge of motor at rear
+	Transform X_fin_M3(Vec3(-finChord / 2, 0, 0));		// moving mob frame
+	MobilizedBody::Weld fin3_mobody(motor_mobody, X_fin_F3,		// weld blade to hub
+		fin_body, X_fin_M3);
+	MobilizedBodyIndex bi_fin3(i_fin3);
+
+	// create MobilizedBody for fin 2
+	Rotation R_finF4;
+	R_finF4.setRotationFromAngleAboutZ(3*Pi / 2);
+	Transform X_fin_F4(R_finF4, Vec3(0, -motorR, -motorLen / 2 + finChord / 2));	// fixed mob frame at X edge of motor at rear
+	Transform X_fin_M4(Vec3(-finChord / 2, 0, 0));		// moving mob frame
+	MobilizedBody::Weld fin4_mobody(motor_mobody, X_fin_F4,		// weld blade to hub
+		fin_body, X_fin_M4);
+	MobilizedBodyIndex bi_fin4(i_fin4);
+
+
+	// add event reporter, call every 0.1 second
 	system.addEventReporter(new MyEventReporter(system, hub_mobody, 0.1));
 
-	// Visualize a frame every 1/10 s
+	// Visualize a frame every 0.1 second
     Visualizer viz(system); 
 	viz.setDesiredFrameRate(100);
     viz.addDecorationGenerator(new ShowData(system));
     system.addEventReporter(new Visualizer::Reporter(viz, 1./10.));
 	viz.addFrameController(new Visualizer::BodyFollower(hub_mobody, Vec3(0), 
 	         Vec3(0, 5, 1), UnitVec3(0, 0, 1)));
-
 
     // Initialize the state, including the custom Force 
 	Force::Custom(forces, new rotorForces(matter));
@@ -357,11 +419,15 @@ int main() {
 	integ.setAccuracy(1e-4);
 
 	// set initial conditions
-	const double initial_ROD = 1;
+	const double initial_ROD = 0;
 	const double initial_RPM = 0;
 	const double initial_ang_vel = initial_RPM * 2.0 * Pi/60.0;
+	const double intial_motor_ang = .5; // radians
 //#if 0
 //	rotor.setQToFitTranslation(state, Vec3(0, 0, .5));
+	Rotation rMotor;
+	rMotor.setRotationFromAngleAboutY(intial_motor_ang);
+	motor_mobody.setQToFitRotation(state, rMotor);
 	hub_mobody.setUToFitAngularVelocity(state, Vec3(0, 0, initial_ang_vel));
 	blade1_mobody.setUToFitAngularVelocity(state, Vec3(0, 0, initial_ang_vel));
 	blade2_mobody.setUToFitAngularVelocity(state, Vec3(0, 0, initial_ang_vel));
