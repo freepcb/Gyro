@@ -7,17 +7,24 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{1ECA3D89-03AB-31D6-8BA8-32026A33C0B4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="sourcefiles">
-      <UniqueIdentifier>{12f3436b-64ce-4edf-b13c-288e86b5ba57}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Gyro.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Rotor.cpp" />
+    <ClCompile Include="src\Rotor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Rotor.h" />
+    <ClInclude Include="src\Rocket.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rotor.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
