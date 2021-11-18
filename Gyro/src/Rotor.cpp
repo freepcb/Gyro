@@ -159,7 +159,7 @@ void RotorBlade::getForces(const State& state, const MobilizedBody& mobod, Vec3 
 	if (printLevel)
 	{ 
 		if (blade_num == 1)
-			printf("\r\nblades: t %.3f\r\n", t);
+			printf("\r\nblades: t %.4f\r\n", t);
 		printf("blade %d: UZ (%6.3f %6.3f %6.3f) VELOCITY(Y,Z) root(%6.3f,%6.3f) tip(%6.3f,%6.3f) FORCE(Y,Z) root(%6.3f,%6.3f) tip(%6.3f,%6.3f)\r\n",
 			blade_num, bodyUnitZG[0], bodyUnitZG[1], bodyUnitZG[2], rootVelY, rootVelZ, tipVelY, tipVelZ, FYroot, FZroot,
 			FYtip, FZtip);

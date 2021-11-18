@@ -38,7 +38,7 @@ const Real g_bladeThick = 0.005;	// average thickness of blade with airfoil
 const Real g_bladeM = g_bladeDensity* g_bladeLen * g_bladeChord * g_bladeThick; // blade mass
 const int g_numBlades = 4;			// number of blades in rotor
 const int g_bladeNsegs = 18;		// number of airfoil segments per blades 
-const int g_bladeFlapAngleDeg = 15;	// fixed blade flap angle (degrees) 
+const int g_bladeFlapAngleDeg = 30;	// fixed blade flap angle (degrees) 
 
 // dimensions of fins
 const Real finDensity = 1000.0;
@@ -54,7 +54,7 @@ const Real motorM = 5;	// 0.5 kg
 
 // dimensions of cylindrical rotor mast
 const Real mastDensity = 1000;		// 2 m
-const Real mastLen = 1.5;		// 2 m
+const Real mastLen = 3.0;		// 3 m
 const Real mastR = 0.01;	// 10 cm
 const Real mastM = mastDensity * mastLen * 2 * Pi * mastR * mastR;
 
@@ -119,7 +119,7 @@ public:
 		const MobilizedBody& fin2_mobody = matter.getMobilizedBody(g_bi_fin2);
 		const MobilizedBody& fin3_mobody = matter.getMobilizedBody(g_bi_fin3);
 		const MobilizedBody& fin4_mobody = matter.getMobilizedBody(g_bi_fin4);
-		int finPrintLevel = 0;
+		int finPrintLevel = 1;
 		fin.calcForces(state, bodyForces, fin1_mobody, finPrintLevel, '1', true);
 		fin.calcForces(state, bodyForces, fin2_mobody, finPrintLevel, '2', true);
 		fin.calcForces(state, bodyForces, fin3_mobody, finPrintLevel, '3', true);
@@ -150,10 +150,10 @@ public:
 		Real FZroot3 = 0; Real FZtip3 = 0; Real FYroot3 = 0; Real FYtip3 = 0;
 		Real FZroot4 = 0; Real FZtip4 = 0; Real FYroot4 = 0; Real FYtip4 = 0;
 		double xoff = bl.m_bladeLenX/2;
-		int printLevel = 0;
+		int printLevel = 1;
 		// set wind velocity to small updraft to avoid divide by zero or atan2() errors
 		bl.getForces(state, blade1_mobody, Vec3(0, 0, 0.0001), printLevel, FZroot1, FZtip1, FYroot1, FYtip1);
-		printLevel = 0;
+		printLevel = 1;
 		bl.getForces(state, blade2_mobody, Vec3(0, 0, 0.0001), printLevel, FZroot2, FZtip2, FYroot2, FYtip2);
 		bl.getForces(state, blade3_mobody, Vec3(0, 0, 0.0001), printLevel, FZroot3, FZtip3, FYroot3, FYtip3);
 		bl.getForces(state, blade4_mobody, Vec3(0, 0, 0.0001), printLevel, FZroot4, FZtip4, FYroot4, FYtip4);
@@ -174,7 +174,7 @@ public:
 		Vec3 hubPos = hub_mobody.getBodyOriginLocation(state);
 		g_altitude = hubPos[2];
 		if (printLevel)
-			printf("forces: t %.4f, angle %5.1f, RPM %6.2f, alt %3.0f, ROD %5.2f, L: %.5f (%.5f+%.5f+%.5f+%.5f) T: %.5f (%.5f+%.5f+%.5f+%.5f)\r\n", 
+			printf("forces: t %.4f, angle %5.1f, RPM %6.2f, alt %3.0f, ROD %5.2f, L: %.3f (%.3f+%.3f+%.3f+%.3f) T: %.3f (%.3f+%.3f+%.3f+%.3f)\r\n", 
 				t, blade1Angle, angVel[2]*60/(2*Pi), hubPos[2], hubVel[2], 
 				g_lift, lift1, lift2, lift3, lift4, g_torque, torque1, torque2, torque3, torque4);
 		g_last_time = t;
@@ -323,7 +323,7 @@ int main() {
 	Transform X_mast_F(R_mast_F, Vec3(0,0,0)); // at center of motor 
 	// M mobilizer frame
 	Rotation R_mast_M;
-	R_mast_M.setRotationFromAngleAboutY(-Pi / 2); 
+	R_mast_M.setRotationFromAngleAboutY(0); 
 	// Sety angle of mast from motor, 0 = lateral, Pi/2 = behind, -Pi/2 = ahead 
 	Rotation R_mast_angle;  
 	R_mast_angle.setRotationFromAngleAboutZ(Pi/2);
@@ -559,6 +559,7 @@ void ShowData::generateDecorations(const State&                state,
 	altitude.setScale(.12);
 	altitude.setColor(Black);
 	geometry.push_back(altitude);
+#if 0
 	// draw line from hub showing lift
 	double liftLineHalfLen = g_lift / 400;
 	DecorativeCylinder liftLine(0.05, liftLineHalfLen);
@@ -567,5 +568,6 @@ void ShowData::generateDecorations(const State&                state,
 	liftLine.setTransform(Transform(g_hubRotation*R90Y,g_hubCenter+g_hubUZ* liftLineHalfLen));
 	liftLine.setColor(Red);
 	geometry.push_back(liftLine);
+#endif
 	i++;
 }
